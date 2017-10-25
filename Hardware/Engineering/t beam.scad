@@ -2,7 +2,7 @@
  * T beam
  */
 
-use <../2D/t.scad>;
+use <../../2D/t.scad>;
 
 module t_beam(dim = [100, 10, 10], t = 1, t1, t2, center = true) {
 

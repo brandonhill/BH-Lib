@@ -1,5 +1,6 @@
-// ****************************************************************************
-// Cylinder with edges (instead of vertices) at radius
+/******************************************************************************
+ * Cylinder with edges (instead of vertices) at radius
+ */
 
 use <../helpers.scad>;
 

@@ -1,4 +1,4 @@
-/************************************************************
+/******************************************************************************
  * HELPERS
  */
 
@@ -21,6 +21,15 @@ function get_fragments_from_r(r, fa = $fa, fn = $fn, fs = $fs) =
  */
 
 function helix_angle(r, pitch) = atan(pitch / (PI * 2 * r));
+
+
+/***
+ * Joins an array into a string
+ */
+
+function join(values, sep = ", ", _out = "", _i = 0) =
+	_i >= len(values) ? _out :
+		join(values, sep, str(_out, values[_i], _i + 1 == len(values) ? "" : sep), _i + 1);
 
 /***
  * Same as `lookup`, but also works with vectors
@@ -93,7 +102,7 @@ module error(msg) {
 }
 
 module print(values) {
-	echo(str(values));
+	echo(join(values, ""));
 }
 
 module warn(msg) {

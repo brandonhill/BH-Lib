@@ -4,6 +4,7 @@
  * See: http://www.metrication.com/engineering/threads.html
  */
 
+include <constants.scad>;
 include <nut.scad>;
 include <threads.scad>;
 
@@ -36,37 +37,35 @@ module _X_screw(
 }
 
 module screw(
-		thread_dia = 1,
+		dim = SCREW_M2_DIM,
+		h = 10,
 		pitch = 0.25,
-		length = 10,
-		head_height = 1,
-		head_rad = 1.5,
 		threaded = false
 	) {
 
-	cylinder(h = head_height, r = head_rad);
+	cylinder(h = dim[2], r = dim[1] / 2);
 
-	translate([0, 0, -length])
+	translate([0, 0, -h])
 	if (threaded) {
-		metric_thread(diameter = thread_dia, pitch = pitch, length = length, internal = false);
+		metric_thread(diameter = dim[0], pitch = pitch, length = h, internal = false);
 	} else {
-		cylinder(h = length, r = thread_dia / 2);
+		cylinder(h = h, r = dim[0] / 2);
 	}
 }
 
 module screw_surround(
 		h = 20,
 		r = 1.75,
-		csRad = 3,
-		csDepth = 2,
-		csStyle = "none",
+
+		cs_dim = [6, 2],
+		cs_style = "none",
 		attachCS = false,
 
 		// wall thickness around hole
 		walls = 1.5,
 		attachWalls = false,
 
-		// nut (probably only need this when csStyle = none)
+		// nut (probably only need this when cs_style = none)
 		nutRad = 2.5,
 		nutDepth = 0,
 		attachNut = false, // only applies when attach = true
@@ -83,7 +82,7 @@ module screw_surround(
 	) {
 
 	nutWalls = nutWalls ? nutWalls : walls;
-	maxRad = max(csRad + walls, nutRad + nutWalls);
+	maxRad = max(cs_dim[0] / 2 + walls, nutRad + nutWalls);
 
 	difference() {
 		intersection() {
@@ -134,37 +133,37 @@ module screw_surround(
 				}
 
 				// countersink walls
-				if (csStyle != "none") {
+				if (cs_style != "none") {
 					hull () {
-						if (csStyle == "recess") {
+						if (cs_style == "recess") {
 
 							// wall
-							cylinder(csDepth + walls, csRad + walls, csRad + walls);
+							cylinder(cs_dim[1] + walls, cs_dim[0] / 2 + walls, cs_dim[0] / 2 + walls);
 
 							// adjoining face
 							if (attach && attachCS) {
-								translate([-csRad - walls, -r - inset, 0])
-								cube([csRad * 2 + walls * 2, 0.1, csDepth + walls]);
+								translate([-cs_dim[0] / 2 - walls, -r - inset, 0])
+								cube([cs_dim[0] / 2 * 2 + walls * 2, 0.1, cs_dim[1] + walls]);
 							}
 
 						} else {
 
 							// wall
-							translate([0, 0, csDepth])
-							cylinder(csRad + walls, csRad + walls, 0);
-							cylinder(csDepth, csRad + walls, csRad + walls);
+							translate([0, 0, cs_dim[1]])
+							cylinder(cs_dim[0] / 2 + walls, cs_dim[0] / 2 + walls, 0);
+							cylinder(cs_dim[1], cs_dim[0] / 2 + walls, cs_dim[0] / 2 + walls);
 
 							// adjoining face
 							if (attach && attachCS) {
-								translate([-csRad - walls, -r - inset, 0])
+								translate([-cs_dim[0] / 2 - walls, -r - inset, 0])
 								rotate([90, 0, 0])
 								linear_extrude(0.1)
 								polygon([
 									[0, 0],
-									[0, csDepth],
-									[csRad + walls, csDepth + csRad + walls],
-									[(csRad + walls) * 2, csDepth],
-									[(csRad + walls) * 2, 0]
+									[0, cs_dim[1]],
+									[cs_dim[0] / 2 + walls, cs_dim[1] + cs_dim[0] / 2 + walls],
+									[(cs_dim[0] / 2 + walls) * 2, cs_dim[1]],
+									[(cs_dim[0] / 2 + walls) * 2, 0]
 								]);
 							}
 						}
@@ -177,27 +176,40 @@ module screw_surround(
 		nut(nutDepth, nutRad);
 
 		if (holes) {
-			screw_diff(h, r, csRad, csDepth, csStyle);
+			screw_diff(h, r, cs_dim[0] / 2, cs_dim[1], cs_style);
 		}
 	}
 }
 
-module screw_diff(h = 20, r = 1.75, csRad = 3, csDepth = 2, csStyle = "none") {
+module screw_diff(
+		dim = SCREW_M2_DIM,
+		h = 10,
+		depth = 10,
+		cs_style = "recess",
+		tolerance = 0,
+		mock = false,
+	) {
 
 	$fs = 1;
 
 	union() {
 
 		// hole
-		cylinder(h, r, r);
+		translate([0, 0, -(h + tolerance)])
+		cylinder(h = (h + tolerance), r = dim[0] / 2 + tolerance);
 
 		// countersink
-		if (csStyle != "none") {
-			cylinder(csDepth, csRad, csRad);
-			if (csStyle == "bevel") {
-				translate([0, 0, csDepth])
-				cylinder(csRad, csRad, 0);
+		if (cs_style != "none") {
+
+			cylinder(h = depth, r = dim[1] / 2 + tolerance);
+
+			if (cs_style == "bevel") {
+				cylinder(h = dim[2], r1 = 0, r2 = dim[1] / 2 + tolerance);
 			}
 		}
 	}
+
+	%
+	if (mock)
+	screw(dim = dim, h = h);
 }
