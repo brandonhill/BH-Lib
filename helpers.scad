@@ -106,7 +106,7 @@ module print(values) {
 }
 
 module warn(msg) {
-	print(["[WARN] ", msg]);
+	print(concat(["[WARN] "], msg));
 }
 
 /***

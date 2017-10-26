@@ -6,16 +6,17 @@
  */
 
 use <../helpers.scad>;
-use <../2D/circle true.scad>;
+use <../2D/semicircle.scad>;
 
 module torus(r1, r2, fa = $fa, fn = $fn, fs = $fs) {
 	rotate_extrude()
 	translate([r1, 0])
-	circle(r2, $fa = fa, $fn = fn, $fs = fs);
+	rotate([0, 0, -90])
+	semicircle(r2, $fa = fa, $fn = fn, $fs = fs);
 }
 
 module torus_true(r1, r2, $fa = $fa, $fn = $fn, $fs = $fs) {
 	rotate_extrude()
 	translate([r1, 0])
-	circle_true(r2, $fa = $fa, $fn = $fn, $fs = $fs);
+	semicircle_true(r2, $fa = $fa, $fn = $fn, $fs = $fs);
 }

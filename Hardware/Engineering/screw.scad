@@ -37,27 +37,36 @@ module _X_screw(
 }
 
 module screw(
-		dim = SCREW_M2_DIM,
+		dim = SCREW_M2_SOCKET_DIM,
 		h = 10,
+		head_style = "socket", // flat, socket
 		pitch = 0.25,
 		threaded = false
 	) {
 
-	cylinder(h = dim[2], r = dim[1] / 2);
+	translate([0, 0, head_style == "flat" ? -dim[2] : 0]) {
 
-	translate([0, 0, -h])
-	if (threaded) {
-		metric_thread(diameter = dim[0], pitch = pitch, length = h, internal = false);
-	} else {
-		cylinder(h = h, r = dim[0] / 2);
+		// head
+		if (head_style == "flat") {
+			cylinder(h = dim[2], r2 = dim[1] / 2, r1 = dim[0] / 2);
+		} else if (head_style == "socket") {
+			cylinder(h = dim[2], r = dim[1] / 2);
+		}
+
+		// shaft
+		translate([0, 0, -h])
+		if (threaded) {
+			metric_thread(diameter = dim[0], pitch = pitch, length = h, internal = false);
+		} else {
+			cylinder(h = h, r = dim[0] / 2);
+		}
 	}
 }
 
 module screw_surround(
+		dim = SCREW_M2_FLAT_DIM,
 		h = 20,
-		r = 1.75,
 
-		cs_dim = [6, 2],
 		cs_style = "none",
 		attachCS = false,
 
@@ -78,11 +87,14 @@ module screw_surround(
 		inset = 10,
 
 		// show holes (usually want to difference the holes from final object)
-		holes = false
+		holes = false,
+		mock = false,
+		tolerance = 0,
 	) {
 
+	r = dim[0] / 2 + tolerance;
 	nutWalls = nutWalls ? nutWalls : walls;
-	maxRad = max(cs_dim[0] / 2 + walls, nutRad + nutWalls);
+	maxRad = max(dim[1] / 2 + walls, nutRad + nutWalls);
 
 	difference() {
 		intersection() {
@@ -133,39 +145,43 @@ module screw_surround(
 				}
 
 				// countersink walls
-				if (cs_style != "none") {
-					hull () {
-						if (cs_style == "recess") {
+				hull () {
+					if (cs_style == "recess") {
 
-							// wall
-							cylinder(cs_dim[1] + walls, cs_dim[0] / 2 + walls, cs_dim[0] / 2 + walls);
+						// wall
+						cylinder(dim[1] + walls, dim[0] / 2 + walls, dim[0] / 2 + walls);
 
-							// adjoining face
-							if (attach && attachCS) {
-								translate([-cs_dim[0] / 2 - walls, -r - inset, 0])
-								cube([cs_dim[0] / 2 * 2 + walls * 2, 0.1, cs_dim[1] + walls]);
-							}
+						// adjoining face
+						if (attach && attachCS) {
+							translate([-dim[0] / 2 - walls, -r - inset, 0])
+							cube([dim[0] / 2 * 2 + walls * 2, 0.1, dim[1] + walls]);
+						}
 
-						} else {
+					// bevel
+					} else if (cs_style == "bevel") {
 
-							// wall
-							translate([0, 0, cs_dim[1]])
-							cylinder(cs_dim[0] / 2 + walls, cs_dim[0] / 2 + walls, 0);
-							cylinder(cs_dim[1], cs_dim[0] / 2 + walls, cs_dim[0] / 2 + walls);
+						// wall
+//						#
+//						translate([0, 0, dim[2]])
+//						cylinder(dim[0] / 2 + walls, dim[0] / 2 + walls, 0);
+//						#
+						cylinder(
+							h = dim[2] + tolerance,
+							r1 = dim[1] / 2 + tolerance + walls,
+							r2 = dim[0] / 2 + tolerance + walls);
 
-							// adjoining face
-							if (attach && attachCS) {
-								translate([-cs_dim[0] / 2 - walls, -r - inset, 0])
-								rotate([90, 0, 0])
-								linear_extrude(0.1)
-								polygon([
-									[0, 0],
-									[0, cs_dim[1]],
-									[cs_dim[0] / 2 + walls, cs_dim[1] + cs_dim[0] / 2 + walls],
-									[(cs_dim[0] / 2 + walls) * 2, cs_dim[1]],
-									[(cs_dim[0] / 2 + walls) * 2, 0]
-								]);
-							}
+						// adjoining face
+						if (attach && attachCS) {
+							translate([-dim[0] / 2 - walls, -r - inset, 0])
+							rotate([90, 0, 0])
+							linear_extrude(0.1)
+							polygon([
+								[0, 0],
+								[0, dim[1]],
+								[dim[0] / 2 + walls, dim[1] + dim[0] / 2 + walls],
+								[(dim[0] / 2 + walls) * 2, dim[1]],
+								[(dim[0] / 2 + walls) * 2, 0]
+							]);
 						}
 					}
 				}
@@ -176,13 +192,15 @@ module screw_surround(
 		nut(nutDepth, nutRad);
 
 		if (holes) {
-			screw_diff(h, r, cs_dim[0] / 2, cs_dim[1], cs_style);
+			translate([0, 0, cs_style != "none" ? dim[2] : 0])
+			scale([1, 1, -1])
+			screw_diff(dim, h, cs_style = cs_style, mock = true, tolerance = tolerance);
 		}
 	}
 }
 
 module screw_diff(
-		dim = SCREW_M2_DIM,
+		dim = SCREW_M2_SOCKET_DIM,
 		h = 10,
 		depth = 10,
 		cs_style = "recess",
@@ -190,26 +208,28 @@ module screw_diff(
 		mock = false,
 	) {
 
-	$fs = 1;
+	$fs = 1; // TODO: parameterize with fa, fn
 
 	union() {
 
-		// hole
+		// thread hole
 		translate([0, 0, -(h + tolerance)])
 		cylinder(h = (h + tolerance), r = dim[0] / 2 + tolerance);
 
+		// head hole
+		translate([0, 0, -0.01])
+		cylinder(h = depth + 0.01, r = dim[1] / 2 + tolerance);
+
 		// countersink
-		if (cs_style != "none") {
-
-			cylinder(h = depth, r = dim[1] / 2 + tolerance);
-
-			if (cs_style == "bevel") {
-				cylinder(h = dim[2], r1 = 0, r2 = dim[1] / 2 + tolerance);
-			}
+		translate([0, 0, -dim[2]])
+		if (cs_style == "recess") {
+			cylinder(h = dim[2], r = dim[1] / 2 + tolerance);
+		} else if (cs_style == "bevel") {
+			cylinder(h = dim[2], r1 = dim[0] / 2 + tolerance, r2 = dim[1] / 2 + tolerance);
 		}
 	}
 
 	%
 	if (mock)
-	screw(dim = dim, h = h);
+	screw(dim = dim, h = h, head_style = cs_style == "bevel" ? "flat" : "socket");
 }
