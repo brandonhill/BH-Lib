@@ -1,2 +1,3 @@
 
-include <F3 mini.scad>;
+include <F3 Mini.scad>;
+include <F3 Pro.scad>;

@@ -1,20 +1,20 @@
 /******************************************************************************
- * Omnibus F3 mini flight controller
+ * Omnibus F3 Pro flight controller
  */
 
 include <../../../../colours.scad>;
 
-FC_OMNIBUS_F3_MINI_BOARD_THICKNESS = 1.5;
-FC_OMNIBUS_F3_MINI_DIM = [27.3, 27.3, 5];
-FC_OMNIBUS_F3_MINI_HOLE_RAD = 2.5 / 2;
-FC_OMNIBUS_F3_MINI_HOLE_SPACING = [20, 20];
+FC_OMNIBUS_F3_PRO_BOARD_THICKNESS = 1.6;
+FC_OMNIBUS_F3_PRO_DIM = [36, 36, 7.6];
+FC_OMNIBUS_F3_PRO_HOLE_RAD = 1.5; // M3
+FC_OMNIBUS_F3_PRO_HOLE_SPACING = [30.5, 30.5];
 
-module fc_omnibus_f3_mini(
-		board_thickness = FC_OMNIBUS_F3_MINI_BOARD_THICKNESS,
+module fc_omnibus_f3_pro(
+		board_thickness = FC_OMNIBUS_F3_PRO_BOARD_THICKNESS,
 		colour = COLOUR_GREY_DARK,
-		dim = FC_OMNIBUS_F3_MINI_DIM,
-		hole_rad = FC_OMNIBUS_F3_MINI_HOLE_RAD,
-		hole_spacing = FC_OMNIBUS_F3_MINI_HOLE_SPACING,
+		dim = FC_OMNIBUS_F3_PRO_DIM,
+		hole_rad = FC_OMNIBUS_F3_PRO_HOLE_RAD,
+		hole_spacing = FC_OMNIBUS_F3_PRO_HOLE_SPACING,
 	) {
 
 	comp_thickness = (dim[2] - board_thickness) / 2;
@@ -42,4 +42,4 @@ module fc_omnibus_f3_mini(
 }
 
 *
-fc_omnibus_f3_mini();
+fc_omnibus_f3_pro();

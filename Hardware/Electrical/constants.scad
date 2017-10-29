@@ -3,3 +3,6 @@
  */
 
 PIN_HEADER_PITCH = 2.54;
+
+SMA_NUT_DIM = [6.25, 8, 1.85];
+SMA_RAD = 6.25 / 2;

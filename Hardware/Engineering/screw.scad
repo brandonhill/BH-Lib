@@ -194,7 +194,7 @@ module screw_surround(
 		if (holes) {
 			translate([0, 0, cs_style != "none" ? dim[2] : 0])
 			scale([1, 1, -1])
-			screw_diff(dim, h, cs_style = cs_style, mock = true, tolerance = tolerance);
+			screw_diff(dim, h, cs_style = cs_style, mock = mock, tolerance = tolerance);
 		}
 	}
 }
@@ -203,7 +203,7 @@ module screw_diff(
 		dim = SCREW_M2_SOCKET_DIM,
 		h = 10,
 		depth = 10,
-		cs_style = "recess",
+		cs_style = "none",
 		tolerance = 0,
 		mock = false,
 	) {

@@ -3,6 +3,7 @@ include <constants.scad>;
 
 use <Chip.scad>;
 include <Buzzers/all.scad>;
+include <Connectors/all.scad>;
 include <LEDs/all.scad>;
 include <Pots/all.scad>;
 include <Switches/all.scad>;

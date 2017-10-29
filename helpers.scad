@@ -164,11 +164,11 @@ module print_registration_bounds(bounds = [180, 180], h = 0.2, t = 0.5) {
  * Mirrors X and Y axes by default (keeps original, unlike `mirror`)
  */
 
-module reflect(x = [-1, 1], y = [-1, 1], z = false) {
+module reflect(x = true, y = true, z = false) {
 	for (
-		_x = x && len(x) > 0 ? x : [1],
-		_y = y && len(y) > 0 ? y : [1],
-		_z = z && len(z) > 0 ? z : [1])
+		_x = x == true ? [-1, 1] : (x && len(x) > 0 ? x : [1]),
+		_y = y == true ? [-1, 1] : (y && len(y) > 0 ? y : [1]),
+		_z = z == true ? [-1, 1] : (z && len(z) > 0 ? z : [1]))
 		scale([_x, _y, _z])
 		children();
 }
