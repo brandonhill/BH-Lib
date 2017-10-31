@@ -12,7 +12,7 @@ function dist_between(a, b) = sqrt(pow(b[0] - a[0], 2) + pow(b[1] - a[1], 2));
 function wire_dia(g, _g = 40, _dia = 0.0799) =
 	g < 0 || g > 40 || g == _g ? _dia : wire_dia(g, _g - 1, _dia * 1.12293);
 
-function wire_rad(g, insulation = false) =
+function wire_rad(g, insulation = true) =
 	wire_dia(g) / 2 * (insulation ? 1.1 + (g / 40) * 1.6 : 1);
 
 module wire_connect(

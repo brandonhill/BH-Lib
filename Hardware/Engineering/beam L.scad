@@ -1,10 +1,10 @@
 /******************************************************************************
- * T beam
+ * L beam
  */
 
-use <../../2D/t.scad>;
+use <../../2D/l.scad>;
 
-module t_beam(dim = [100, 10, 10], t = 1, t1, t2, center = true) {
+module beam_l(dim = [100, 10, 10], t = 1, t1, t2, center = true) {
 
 	_t1 = t1 ? t1 : t;
 	_t2 = t2 ? t2 : t;
@@ -12,7 +12,5 @@ module t_beam(dim = [100, 10, 10], t = 1, t1, t2, center = true) {
 	rotate([0, 90, 0])
 	linear_extrude(dim[0], center = center)
 	rotate([0, 0, 90])
-	t([dim[1], dim[2]], t1 = _t1, t2 = _t2);
+	l([dim[1], dim[2]], t1 = _t1, t2 = _t2);
 }
-
-t_beam();
