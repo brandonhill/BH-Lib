@@ -32,6 +32,26 @@ function join(values, sep = ", ", _out = "", _i = 0) =
 		join(values, sep, str(_out, values[_i], _i + 1 == len(values) ? "" : sep), _i + 1);
 
 /***
+ * Same as `rotate_extrude`, but with height, like `linear_extrude`
+ */
+
+module linear_rotate_extrude(h = 1, a = 360, center = true, convexity = 1, $fn = 0) {
+
+	_steps = round(max(2, $fn != 0 ? $fn : a / 360 * 12));
+
+	translate([0, 0, center ? -h / 2 : 0])
+	for (i = [0 : _steps - 1])
+	hull()
+	for (j = [0, 1])
+	translate([0, 0, h / _steps * (i + j)])
+	rotate([0, 0, a / _steps * (i + j)])
+	rotate([90, 0])
+	scale([1, 1, 0.001])
+	linear_extrude(1)
+	children();
+}
+
+/***
  * Same as `lookup`, but also works with vectors
  */
 

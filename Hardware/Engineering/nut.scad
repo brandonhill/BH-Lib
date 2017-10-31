@@ -79,7 +79,7 @@ module nut(
 
 		translate([0, 0, -0.1])
 		if (threaded)
-			metric_thread(diameter = dim[0], pitch = pitch, length = height + 0.2, internal = true);
+			thread_iso_metric(dim[0], height + 0.2, pitch, internal = true);
 		else
 			cylinder(h = height + 0.2, r = dim[0] / 2);
 	}

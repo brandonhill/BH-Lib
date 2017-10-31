@@ -56,7 +56,7 @@ module screw(
 		// shaft
 		translate([0, 0, -h])
 		if (threaded) {
-			metric_thread(diameter = dim[0], pitch = pitch, length = h, internal = false);
+			thread_iso_metric(dim[0], h, pitch);
 		} else {
 			cylinder(h = h, r = dim[0] / 2);
 		}
