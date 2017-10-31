@@ -12,12 +12,13 @@ module shape_thread_iso_metric(
 		pitch,
 	) {
 
-	H = 0.866 * pitch;
-	d_minor = d - 1.082532 * pitch;
+	d_minor = d - (5 * sqrt(3)) / 8 * pitch;
+	H = pitch / (2 * tan(30));
 	r_inner = d_minor / 2 - H / 4;
 	r_outer = d / 2 + H / 8;
 
 	polygon([
+		[0, 0],
 		[r_inner, pitch / 2],
 		[r_outer, 0],
 		[r_inner, -pitch / 2],
@@ -30,26 +31,35 @@ module thread_iso_metric(
 		pitch,
 		center = true,
 		internal = false,
+		reverse = false,
 		starts = 1,
 	) {
 
-	d_minor = d - 1.082532 * pitch;
+	d_minor = d - (5 * sqrt(3)) / 8 * pitch;
+	H = pitch / (2 * tan(30));
 
-	// minor
-	if (internal)
-	cylinder(h = h, r = d_minor / 2, center = center);
+	// inner
+	cylinder(h = h, r = d_minor / 2 - (internal ? 0 : H / 4), center = center);
 
 	intersection() {
 
-		// major
+		// outer
 		cylinder(h = h, r = d / (internal ? 1 : 2), center = center);
 
 		// thread
 		for (i = [0 : pitch * starts : ceil(h)], j = [0 : starts - 1])
-		translate([0, 0, -h / 2 + i])
+		translate([0, 0, -(center ? h / 2 : 0) + i])
 		rotate([0, 0, 360 / starts * j])
-		linear_rotate_extrude(pitch * starts, $fn = get_fragments_from_r(d /2))
+		linear_rotate_extrude(pitch * starts * (reverse ? 1 : -1), $fn = get_fragments_from_r(d /2), convexity = 2)
 		shape_thread_iso_metric(d, h, pitch);
+	}
+
+	// dim checks
+	*#union() {
+		cylinder(h = pitch / 8, r = d / 2, center = true);
+
+		translate([0, 0, pitch / 2])
+		cylinder(h = pitch / 4, r = d_minor / 2, center = true);
 	}
 }
 
@@ -58,9 +68,10 @@ module thread_iso_metric(
 $fs = 0.5;
 include <constants.scad>;
 
-thread_iso_metric(3, 4, THREAD_PITCH_M3_COARSE);
+show_half() {
+	thread_iso_metric(3, 4, THREAD_PITCH_M3_COARSE);
 
-translate([4, 0])
-thread_iso_metric(3, 4, THREAD_PITCH_M3_COARSE, internal = true);
-
+	translate([4, 0])
+	thread_iso_metric(3, 4, THREAD_PITCH_M3_COARSE, internal = true);
+}
 //*/

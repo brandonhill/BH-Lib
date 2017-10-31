@@ -17,6 +17,16 @@ function get_fragments_from_r(r, fa = $fa, fn = $fn, fs = $fs) =
 ;
 
 /***
+ * Similar to `reflect` but without mirroring
+ */
+
+module transpose(pos = []) {
+	for (x = [-1, 1], y = [-1, 1], z = len(pos) > 2 ? [-1, 1] : [1])
+	translate([pos[0] * x, pos[1] * y, len(pos) > 2 ? pos[2] * z : 0])
+	children();
+}
+
+/***
  * Gets angle of a helix at given radius and pitch
  */
 
