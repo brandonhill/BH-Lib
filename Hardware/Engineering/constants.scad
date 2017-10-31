@@ -13,13 +13,13 @@ NUT_M2_DIM = [2, 4, 2];
 
 NUT_M3_DIM = [3, 5.7, 2.4];
 
-// SCREWS - [thread dia., head dia., head height]
+// SCREWS - [thread dia., head dia., head height, socket dia, socket depth]
 
 SCREW_M2_FLAT_DIM = [2, 3.8, 1.2];
-SCREW_M2_SOCKET_DIM = [2, 4, 2];
+SCREW_M2_SOCKET_DIM = [2, 3.8, 2, 1.55, 1];
 
-SCREW_M3_FLAT_DIM = [3, 5.6, 1.65];
-SCREW_M3_SOCKET_DIM = [3, 5.7, 3];
+SCREW_M3_FLAT_DIM = [3, 6, 1.65, 2.1, 1];
+SCREW_M3_SOCKET_DIM = [3, 5.5, 3, 2.55, 1.3];
 
 // THREADS
 

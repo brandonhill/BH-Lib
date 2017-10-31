@@ -4,7 +4,7 @@
 
 use <../helpers.scad>;
 
-module cylinder_true(h, r = 0, r1 = 0, r2 = 0, center = false, $fa = $fa, $fn = $fn, $fs = $fs) {
+module cylinder_true(h, r = 0, r1 = 0, r2 = 0, center = true, $fa = $fa, $fn = $fn, $fs = $fs) {
 
 	_r1 = r > 0 ? r : r1;
 	_r2 = r > 0 ? r : r2;

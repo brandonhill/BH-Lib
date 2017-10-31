@@ -7,56 +7,42 @@
 include <constants.scad>;
 include <nut.scad>;
 include <threads.scad>;
-
-module _X_screw(
-		dim, // [dia., head_rad, head_height]
-		l, // length
-		poly = 0 // prints radius exactly
-	) {
-
-	// head
-	if (dim[1] && dim[2]) {
-		if (poly) {
-			linear_extrude(dim[2])
-			polygon(poly_coords(poly, dim[1] / 2));
-		} else {
-			cylinder(h = dim[2], r = dim[1] / 2);
-		}
-	}
-
-	// shaft
-	if (dim[0]) {
-		translate([0, 0, -l])
-		if (poly) {
-			linear_extrude(l)
-			polygon(poly_coords(poly, dim[0] / 2));
-		} else {
-			cylinder(h = l, r = dim[0] / 2);
-		}
-	}
-}
+include <../../3D/cylinder true.scad>;
 
 module screw(
 		dim = SCREW_M2_SOCKET_DIM,
 		h = 10,
-		head_style = "socket", // flat, socket
 		pitch = 0.25,
-		threaded = false
+		head = "socket", // flat, socket
+		offset = 0, // for print tolerance
+		reverse = false,
+		socket = "hex", // hex, star
+		threaded = false,
 	) {
 
-	translate([0, 0, head_style == "flat" ? -dim[2] : 0]) {
+	translate([0, 0, head == "flat" ? -dim[2] : 0]) {
 
 		// head
-		if (head_style == "flat") {
-			cylinder(h = dim[2], r2 = dim[1] / 2, r1 = dim[0] / 2);
-		} else if (head_style == "socket") {
-			cylinder(h = dim[2], r = dim[1] / 2);
+		difference() {
+			if (head == "flat") {
+				cylinder(h = dim[2], r2 = dim[1] / 2, r1 = dim[0] / 2);
+			} else if (head == "socket") {
+				cylinder(h = dim[2], r = dim[1] / 2);
+			}
+
+			// socket
+			if (socket == "hex") {
+				translate([0, 0, dim[2] - dim[4] / 2 + 0.05])
+				cylinder_true(h = dim[4] + 0.1, r = dim[3] / 2 + offset, $fn = 6);
+			} else if (socket == "star") {
+				// TODO
+			}
 		}
 
 		// shaft
 		translate([0, 0, -h])
 		if (threaded) {
-			thread_iso_metric(dim[0], h, pitch);
+			thread_iso_metric(dim[0] - offset * 2, h, pitch, center = false, reverse = reverse);
 		} else {
 			cylinder(h = h, r = dim[0] / 2);
 		}

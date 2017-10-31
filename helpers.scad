@@ -42,7 +42,8 @@ function join(values, sep = ", ", _out = "", _i = 0) =
 		join(values, sep, str(_out, values[_i], _i + 1 == len(values) ? "" : sep), _i + 1);
 
 /***
- * Same as `rotate_extrude`, but with height, like `linear_extrude`
+ * Same as `rotate_extrude`, but with height
+ * Note: it's a hack since you can't hull 2D shapes :(
  */
 
 module linear_rotate_extrude(h = 1, a = 360, center = true, convexity = 1, $fn = 0) {
@@ -56,7 +57,7 @@ module linear_rotate_extrude(h = 1, a = 360, center = true, convexity = 1, $fn =
 	translate([0, 0, h / _steps * (i + j)])
 	rotate([0, 0, a / _steps * (i + j)])
 	rotate([90, 0])
-	scale([1, 1, 0.001])
+	scale([1, 1, 0.001]) // hack!
 	linear_extrude(1)
 	children();
 }
@@ -75,6 +76,16 @@ function lookup_linear(i, table) =
 		];
 
 /***
+ * Sweep a value (for animation)
+ */
+
+function oscillate(min = -1, max = 1, t = $t) = (
+	(t < 0.5 ?
+	t * 2 :
+	1 - 2 * (t - 0.5)) * (max - min) + min
+);
+
+/***
  * Creates array of polygon coordinates with faces at radius. Used for nuts and
  * critical internal radii. (Low poly `circle` has points at radius, so
  * effective radius is considerably reduced.)
@@ -88,14 +99,42 @@ function poly_coords(n, r = 1, mid = true) = [
 ];
 
 /***
- * Sweep a value (for animation)
+ * Point transformations
  */
 
-function oscillate(min = -1, max = 1, t = $t) = (
-	(t < 0.5 ?
-	t * 2 :
-	1 - 2 * (t - 0.5)) * (max - min) + min
-);
+function rotate_point_z(p, a) =
+	concat([
+		p[0] * cos(a) - p[1] * sin(a),
+		p[0] * sin(a) + p[1] * cos(a)],
+		len(p) > 2 ? p[2] : []);
+
+function rotate_point_y(p, a) =
+	let(p2 = len(p) > 2 ? p[2] : 0)
+	[p[0] * cos(a) - p2 * sin(a),
+	p[1],
+	p[0] * sin(a) + p2 * cos(a)];
+
+function rotate_point_x(p, a) =
+	let(p2 = len(p) > 2 ? p[2] : 0)
+	[p[0],
+	p[1] * cos(a) - p2 * sin(a),
+	p[1] * sin(a) + p2 * cos(a)];
+
+function rotate_point(p, a) =
+	let(a2 = len(a) > 2 ? a[2] : 0)
+	rotate_point_z(rotate_point_y(rotate_point_x(p, a[0]), a[1]), a2);
+
+function rotate_points(p, a) = [
+	for (i = [0 : len(p) - 1])
+		rotate_point(p[i], a)
+	];
+
+function translate_point(p, t) =
+	concat(
+		[p[0] + t[0], p[1] + t[1]],
+		len(p) > 2 ? p[2] + (len(t) > 2 ? t[2] : 0) : []);
+
+function translate_points(p, t) = [ for (i = [0 : len(p) - 1]) translate_point(p[i], t) ];
 
 /***
  * Sum a vector
@@ -131,8 +170,8 @@ module error(msg) {
 	print(["[ERROR] ", msg]);
 }
 
-module print(values) {
-	echo(join(values, ""));
+module print(values, sep = "") {
+	echo(join(values, sep));
 }
 
 module warn(msg) {
