@@ -3,6 +3,14 @@
  */
 
 /***
+ * Clamp a value between two limiting values
+ */
+
+function clamp(value, v1, v2) =
+	let (_max = max(v1, v2), _min = min(v1, v2))
+	min(_max, max(_min, value));
+
+/***
  * Determines $fn for given $fa/$fs
  *
  * See: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#.24fa.2C_.24fs_and_.24fn
@@ -74,6 +82,19 @@ function lookup_linear(i, table) =
 			let(vals = [ for (i = [0 : size - 1]) [table[i][0], table[i][1][col]] ])
 			lookup(i, vals)
 		];
+
+/***
+ * Offsets points
+ */
+
+function offset_point(
+		p,
+		delta = 0,
+	) =
+	concat([
+		p[0] + delta * 2,
+		p[1] + delta * 2],
+		len(p) > 2 ? p[2] + delta * 2 : []);
 
 /***
  * Sweep a value (for animation)
