@@ -3,6 +3,7 @@
  */
 
 use <../helpers.scad>;
+use <circle true.scad>;
 
 module semicircle(r = 1, $fa = $fa, $fn = $fn, $fs = $fs) {
 	difference() {

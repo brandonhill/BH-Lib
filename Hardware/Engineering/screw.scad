@@ -217,5 +217,6 @@ module screw_diff(
 
 	%
 	if (mock)
-	screw(dim = dim, h = h, head_style = cs_style == "bevel" ? "flat" : "socket");
+	translate([0, 0, cs_style == "recess" ? -dim[2] : 0])
+	screw(dim = dim, h = h, head = cs_style == "bevel" ? "flat" : "socket");
 }
