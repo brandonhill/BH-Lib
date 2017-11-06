@@ -53,24 +53,26 @@ module screw_surround(
 		dim = SCREW_M2_FLAT_DIM,
 		h = 20,
 
+		end, // [undef | true | "rounded"]
+
 		cs_style = "none",
-		attachCS = false,
+		attach_cs = false,
 
 		// wall thickness around hole
 		walls = 1.5,
-		attachWalls = false,
+		attach_walls = false,
 
-		// nut (probably only need this when cs_style = none)
-		nutRad = 2.5,
-		nutDepth = 0,
-		attachNut = false, // only applies when attach = true
-		nutWalls = 2, // can make beefier than hole walls
+		// nut
+		nut = false,
+		nut_dim = NUT_M2_DIM,
+		attach_nut = false, // only applies when attach = true
+		nut_walls = 2, // can make beefier than hole walls
 
 		// attach to adjoining face
 		attach = false,
 
 		// inset the hole from a surface (typically used with attach = true)
-		inset = 10,
+		inset,
 
 		// show holes (usually want to difference the holes from final object)
 		holes = false,
@@ -78,53 +80,70 @@ module screw_surround(
 		tolerance = 0,
 	) {
 
+	if (end && nut)
+		warn(["screw_surround() - `end` (", end, ") and `nut` (", nut, ") can't be used at the same time"]);
+
+	r_outer = dim[0] / 2 + tolerance + walls;
+	_end = end == true ? walls : (end == "rounded" ? r_outer : 0);
+	_inset = inset != undef ? inset : walls;
 	r = dim[0] / 2 + tolerance;
-	nutWalls = nutWalls ? nutWalls : walls;
-	maxRad = max(dim[1] / 2 + walls, nutRad + nutWalls);
+	nut_walls = nut_walls ? nut_walls : walls;
+	r_max = max(dim[1] / 2 + walls, nut_dim[1] / 2 + nut_walls);
 
 	difference() {
 		intersection() {
 
-			translate([-maxRad, attach ? -r - inset : -maxRad, 0])
-			cube([maxRad * 2, maxRad * 2 + inset, h]);
+			translate([-r_max, attach ? -r - _inset : -r_max, 0])
+			cube([r_max * 2, r_max * 2 + _inset, h + _end]);
 
 			union() {
 				hull() {
 
 					// wall
-					cylinder(h, r + walls, r + walls);
+					translate([0, 0, end == "rounded" ? -_end : 0])
+					cylinder(h + (end == true ? _end : 0), r + walls, r + walls);
+
+					if (end == "rounded")
+						translate([0, 0, h])
+						sphere(_end);
 
 					// adjoining face (meets with wall)
-					if (attach && attachWalls) {
-						translate([-r - walls, -r - inset, 0])
-						cube([(r + walls) * 2 , 0.1, h]);
+//					if (attach && attach_walls) {
+					if (attach_walls) {
+						translate([-r - walls, -r - _inset, 0])
+						cube([(r + walls) * 2 , 0.1, h + (end == true ? _end : 0)]);
+
+						if (end == "rounded")
+							translate([0, -r_outer, h])
+							rotate([90, 0])
+							cylinder(h = walls, r = _end);
 					}
 				}
 
-				if (attach && !attachWalls) {
-					translate([-(attach == true ? walls : attach) / 2, -r - inset, 0])
-					cube([attach == true ? walls : attach, r + inset, h]);
+				if (attach && !attach_walls) {
+					translate([-(attach == true ? walls : attach) / 2, -r - _inset, 0])
+					cube([attach == true ? walls : attach, r + _inset, h]);
 				}
 
 				// nut wall
-				if (nutDepth) {
+				if (nut) {
 					hull () {
-						translate([0, 0, h - nutDepth])
-						cylinder(nutDepth, nutRad + nutWalls, nutRad + nutWalls);
-						translate([0, 0, h - nutDepth - nutRad - nutWalls])
-						cylinder(nutRad + nutWalls, 0, nutRad + nutWalls);
+						translate([0, 0, h - nut_dim[2]])
+						cylinder(nut_dim[2], nut_dim[1] / 2 + nut_walls, nut_dim[1] / 2 + nut_walls);
+						translate([0, 0, h - nut_dim[2] - nut_dim[1] / 2 - nut_walls])
+						cylinder(nut_dim[1] / 2 + nut_walls, 0, nut_dim[1] / 2 + nut_walls);
 
 						// adjoining face
-						if (attach && attachNut) {
-							translate([-(nutRad + nutWalls), -r - inset, h])
+						if (attach && attach_nut) {
+							translate([-(nut_dim[1] / 2 + nut_walls), -r - _inset, h])
 									rotate([-90, 0, 0])
 									linear_extrude(0.1)
 									polygon([
 										[0, 0],
-										[0, nutDepth],
-										[nutRad + nutWalls, nutDepth + nutRad + nutWalls],
-										[(nutRad + nutWalls) * 2, nutDepth],
-										[(nutRad + nutWalls) * 2, 0]
+										[0, nut_dim[2]],
+										[nut_dim[1] / 2 + nut_walls, nut_dim[2] + nut_dim[1] / 2 + nut_walls],
+										[(nut_dim[1] / 2 + nut_walls) * 2, nut_dim[2]],
+										[(nut_dim[1] / 2 + nut_walls) * 2, 0]
 									]);
 						}
 					}
@@ -138,8 +157,8 @@ module screw_surround(
 						cylinder(dim[1] + walls, dim[0] / 2 + walls, dim[0] / 2 + walls);
 
 						// adjoining face
-						if (attach && attachCS) {
-							translate([-dim[0] / 2 - walls, -r - inset, 0])
+						if (attach && attach_cs) {
+							translate([-dim[0] / 2 - walls, -r - _inset, 0])
 							cube([dim[0] / 2 * 2 + walls * 2, 0.1, dim[1] + walls]);
 						}
 
@@ -157,8 +176,8 @@ module screw_surround(
 							r2 = dim[0] / 2 + tolerance + walls);
 
 						// adjoining face
-						if (attach && attachCS) {
-							translate([-dim[0] / 2 - walls, -r - inset, 0])
+						if (attach && attach_cs) {
+							translate([-dim[0] / 2 - walls, -r - _inset, 0])
 							rotate([90, 0, 0])
 							linear_extrude(0.1)
 							polygon([
@@ -174,8 +193,9 @@ module screw_surround(
 			}
 		}
 
-		translate([0, 0, h - nutDepth])
-		nut(nutDepth, nutRad);
+		if (nut)
+		translate([0, 0, h - nut_dim[2]])
+		nut(nut_dim[2], nut_dim[1] / 2);
 
 		if (holes) {
 			translate([0, 0, cs_style != "none" ? dim[2] : 0])

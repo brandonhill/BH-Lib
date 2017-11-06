@@ -25,16 +25,6 @@ function get_fragments_from_r(r, fa = $fa, fn = $fn, fs = $fs) =
 ;
 
 /***
- * Similar to `reflect` but without mirroring
- */
-
-module transpose(pos = []) {
-	for (x = [-1, 1], y = [-1, 1], z = len(pos) > 2 ? [-1, 1] : [1])
-	translate([pos[0] * x, pos[1] * y, len(pos) > 2 ? pos[2] * z : 0])
-	children();
-}
-
-/***
  * Gets angle of a helix at given radius and pitch
  */
 
@@ -74,7 +64,7 @@ module linear_rotate_extrude(h = 1, a = 360, center = true, convexity = 1, $fn =
  * Same as `lookup`, but also works with vectors
  */
 
-function lookup_linear(i, table) =
+function lookup_vector(i, table) =
 	let(size = len(table),
 		dim = max([ for (i = [0 : size - 1]) len(table[i][1]) ]))
 	dim == 1 ? lookup(i, table) :
@@ -87,10 +77,7 @@ function lookup_linear(i, table) =
  * Offsets points
  */
 
-function offset_point(
-		p,
-		delta = 0,
-	) =
+function offset_point(p, delta = 0) =
 	concat([
 		p[0] + delta * 2,
 		p[1] + delta * 2],
@@ -123,11 +110,11 @@ function poly_coords(n, r = 1, mid = true) = [
  * Point transformations
  */
 
-function rotate_point_z(p, a) =
-	concat([
-		p[0] * cos(a) - p[1] * sin(a),
-		p[0] * sin(a) + p[1] * cos(a)],
-		len(p) > 2 ? p[2] : []);
+function rotate_point_x(p, a) =
+	let(p2 = len(p) > 2 ? p[2] : 0)
+	[p[0],
+	p[1] * cos(a) - p2 * sin(a),
+	p[1] * sin(a) + p2 * cos(a)];
 
 function rotate_point_y(p, a) =
 	let(p2 = len(p) > 2 ? p[2] : 0)
@@ -135,11 +122,11 @@ function rotate_point_y(p, a) =
 	p[1],
 	p[0] * sin(a) + p2 * cos(a)];
 
-function rotate_point_x(p, a) =
-	let(p2 = len(p) > 2 ? p[2] : 0)
-	[p[0],
-	p[1] * cos(a) - p2 * sin(a),
-	p[1] * sin(a) + p2 * cos(a)];
+function rotate_point_z(p, a) =
+	concat([
+		p[0] * cos(a) - p[1] * sin(a),
+		p[0] * sin(a) + p[1] * cos(a)],
+		len(p) > 2 ? p[2] : []);
 
 function rotate_point(p, a) =
 	let(a2 = len(a) > 2 ? a[2] : 0)
@@ -161,8 +148,18 @@ function translate_points(p, t) = [ for (i = [0 : len(p) - 1]) translate_point(p
  * Sum a vector
  */
 
-function sum(v, a = 0, i = 0) =
-	i == len(v) ? a : sum(v, a + v[i], i + 1);
+function sum(v, _a = 0, _i = 0) =
+	_i == len(v) ? _a : sum(v, _a + v[_i], _i + 1);
+
+/***
+ * Similar to `reflect` but without mirroring
+ */
+
+module transpose(pos = []) {
+	for (x = [-1, 1], y = [-1, 1], z = len(pos) > 2 ? [-1, 1] : [1])
+	translate([pos[0] * x, pos[1] * y, len(pos) > 2 ? pos[2] * z : 0])
+	children();
+}
 
 /************************************************************
  * PRINTING
@@ -188,7 +185,7 @@ function toleranceZ(n = 0) = n + TOLERANCE_Z;
  */
 
 module error(msg) {
-	print(["[ERROR] ", msg]);
+	print(concat(["[ERROR] "], msg));
 }
 
 module print(values, sep = "") {
@@ -267,7 +264,7 @@ module reflect(x = true, y = true, z = false) {
  * Show half of the thing
  */
 
-module show_half(r = [0, 0, 0], t = [0, 0, 0], d = 1000, 2d = false) {
+module show_half(r = [], t = [], d = 1000, 2d = false) {
 	intersection() {
 		translate(t)
 		rotate(r)
