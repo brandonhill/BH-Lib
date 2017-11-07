@@ -53,7 +53,7 @@ module screw_surround(
 		dim = SCREW_M2_FLAT_DIM,
 		h = 20,
 
-		end, // [undef | true | "rounded"]
+		end, // [undef | true (flat) | "rounded" | "point"]
 
 		cs_style = "none",
 		attach_cs = false,
@@ -88,7 +88,7 @@ module screw_surround(
 
 	r_outer = dim[0] / 2 + tolerance + walls;
 	fn = fn != undef ? fn : get_fragments_from_r(r_outer);
-	_end = end == true ? walls : (end == "rounded" ? r_outer : 0);
+	_end = end == true ? walls : (end == "point" ? r_outer * 2 : (end == "rounded" ? r_outer : 0));
 	_inset = inset != undef ? inset : walls;
 	r = dim[0] / 2 + tolerance;
 	nut_walls = nut_walls ? nut_walls : walls;
@@ -101,15 +101,21 @@ module screw_surround(
 			cube([r_max * 2, r_max * 2 + _inset, h + _end]);
 
 			union() {
-				hull() {
+				hull()
+				{
 
 					// wall
 					translate([0, 0, end == "rounded" ? -_end : 0])
 					cylinder(h = h + (end == true ? _end : 0), r = r + walls, $fn = fn);
 
-					if (end == "rounded")
+					if (end == "point" || end == "rounded")
 						translate([0, 0, h])
-						sphere(_end, $fn = fn);
+						sphere(r_outer, $fn = fn);
+
+					if (end == "point") {
+						translate([0, -r_outer, h + _end])
+						sphere(0.05);
+					}
 
 					// adjoining face (meets with wall)
 //					if (attach && attach_walls) {
@@ -120,7 +126,8 @@ module screw_surround(
 						if (end == "rounded")
 							translate([0, -r_outer, h])
 							rotate([90, 0])
-							cylinder(h = walls, r = _end, $fn = fn);
+							scale([1, 1, -1])
+							cylinder(h = 0.01, r = _end, $fn = fn);
 					}
 				}
 
