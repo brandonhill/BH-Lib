@@ -78,12 +78,16 @@ module screw_surround(
 		holes = false,
 		mock = false,
 		tolerance = 0,
+
+		// for surround (not hole)
+		fn,
 	) {
 
 	if (end && nut)
 		warn(["screw_surround() - `end` (", end, ") and `nut` (", nut, ") can't be used at the same time"]);
 
 	r_outer = dim[0] / 2 + tolerance + walls;
+	fn = fn != undef ? fn : get_fragments_from_r(r_outer);
 	_end = end == true ? walls : (end == "rounded" ? r_outer : 0);
 	_inset = inset != undef ? inset : walls;
 	r = dim[0] / 2 + tolerance;
@@ -101,11 +105,11 @@ module screw_surround(
 
 					// wall
 					translate([0, 0, end == "rounded" ? -_end : 0])
-					cylinder(h + (end == true ? _end : 0), r + walls, r + walls);
+					cylinder(h = h + (end == true ? _end : 0), r = r + walls, $fn = fn);
 
 					if (end == "rounded")
 						translate([0, 0, h])
-						sphere(_end);
+						sphere(_end, $fn = fn);
 
 					// adjoining face (meets with wall)
 //					if (attach && attach_walls) {
@@ -116,7 +120,7 @@ module screw_surround(
 						if (end == "rounded")
 							translate([0, -r_outer, h])
 							rotate([90, 0])
-							cylinder(h = walls, r = _end);
+							cylinder(h = walls, r = _end, $fn = fn);
 					}
 				}
 
@@ -154,7 +158,7 @@ module screw_surround(
 					if (cs_style == "recess") {
 
 						// wall
-						cylinder(dim[1] + walls, dim[0] / 2 + walls, dim[0] / 2 + walls);
+						cylinder(dim[1] + walls, dim[0] / 2 + walls, dim[0] / 2 + walls, $fn = fn);
 
 						// adjoining face
 						if (attach && attach_cs) {
@@ -173,7 +177,7 @@ module screw_surround(
 						cylinder(
 							h = dim[2] + tolerance,
 							r1 = dim[1] / 2 + tolerance + walls,
-							r2 = dim[0] / 2 + tolerance + walls);
+							r2 = dim[0] / 2 + tolerance + walls, $fn = fn);
 
 						// adjoining face
 						if (attach && attach_cs) {

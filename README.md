@@ -15,11 +15,14 @@ An OpenSCAD library of useful functions, modules and components.
 
 ## Helper functions/modules
 
+* `circumference(r)` - circumference of a circle
 * `clamp(value, v1, v2)` - clamps a value between two other values
+* `contains(needle, haystack)` - checks if vector contains given value
 * `error(msg)` - logs a vector of error message values to the console
 * `for_unity3d(scale = 0.001)` - scales and orients models for use in Unity3D
 * `get_fragments_from_r(r, fa = $fa, fn = $fn, fs = $fs)` - derives `$fn` from radius, as per docs
 * `helix_angle(r, pitch)` - determines angle of a helix at given pitch and radius
+* `index_of(needle, haystack)` - finds index of given value
 * `join(values, sep = ", ")` - creates a string from vector elements
 * `linear_extrude_chamfer(h, chamfer, round = false, center = false, convexity = 1, $fn = $fn)` - applies a `linear_extrude` and `minkowski` to a shape resulting in chamfered edge
 * `linear_rotate_extrude(h = 1, a = 360, center = true, convexity = 1, $fn = 0)` - mimics `rotate_extrude` while applying a linear transform. **It's a hack!** - `hull`s two thin `linear_extrude`s, since we can't hull 2D shapes in 3D
@@ -77,7 +80,8 @@ An OpenSCAD library of useful functions, modules and components.
 
 * Buzzer
 * Chip
-* SMA/RP-SMA connector
+* Connectors
+* Jacks
 * LEDs
 * Pin headers
 * Potentiometers
@@ -94,6 +98,7 @@ An OpenSCAD library of useful functions, modules and components.
 
 ### Mechanical
 
+* Centrifugal fan (blower)
 * Duct/pipe flange
 
 ### RC
@@ -101,6 +106,7 @@ An OpenSCAD library of useful functions, modules and components.
 * 5.8GHz antenna
 * Batteries
 * Cameras
+* DVRs
 * ESCs
 * Flight controllers
 * GPS
@@ -108,4 +114,5 @@ An OpenSCAD library of useful functions, modules and components.
 * Propellers
 * Receivers
 * Servos
+* Video receivers
 * Video transmitters

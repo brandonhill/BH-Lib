@@ -2,6 +2,14 @@
  * HELPERS
  */
 
+include <constants.scad>;
+
+/***
+ * Circumference of a circle
+ */
+
+function circumference(r) = 2 * PI * r;
+
 /***
  * Clamp a value between two limiting values
  */
@@ -9,6 +17,12 @@
 function clamp(value, v1, v2) =
 	let (_max = max(v1, v2), _min = min(v1, v2))
 	min(_max, max(_min, value));
+
+/***
+ * Check if vector contains given value
+ */
+
+function contains(needle, haystack) = index_of(needle, haystack) >= 0;
 
 /***
  * Determines $fn for given $fa/$fs
@@ -30,6 +44,13 @@ function get_fragments_from_r(r, fa = $fa, fn = $fn, fs = $fs) =
 
 function helix_angle(r, pitch) = atan(pitch / (PI * 2 * r));
 
+/***
+ * Find index of a given value, -1 if not found
+ */
+
+function index_of(needle, haystack, _i = 0) =
+	_i >= len(haystack) ? -1 : (haystack[_i] == needle ? _i : index_of(needle, haystack, _i + 1));
+
 
 /***
  * Joins an array into a string
@@ -38,6 +59,31 @@ function helix_angle(r, pitch) = atan(pitch / (PI * 2 * r));
 function join(values, sep = ", ", _out = "", _i = 0) =
 	_i >= len(values) ? _out :
 		join(values, sep, str(_out, values[_i], _i + 1 == len(values) ? "" : sep), _i + 1);
+
+/***
+ * Chamfers while extruding a 2D shape
+ */
+
+module linear_extrude_chamfer(h, chamfer, round = false, center = true, convexity = 1, $fn = $fn) {
+
+	render(convexity = convexity)
+	translate([0, 0, center ? 0 : chamfer])
+	minkowski() {
+
+		// extrude
+		linear_extrude(h - chamfer * 2, center = center, convexity = convexity)
+		offset(r = -chamfer)
+		children();
+
+		// this is the chamfer we're interested in
+		if (round)
+			sphere(chamfer, $fn = $fn);
+		else
+			for (z = [-1, 1])
+				scale([1, 1, z])
+				cylinder(h = chamfer, r1 = chamfer, r2 = 0);
+	}
+}
 
 /***
  * Same as `rotate_extrude`, but with height
@@ -155,10 +201,13 @@ function sum(v, _a = 0, _i = 0) =
  * Similar to `reflect` but without mirroring
  */
 
-module transpose(pos = []) {
-	for (x = [-1, 1], y = [-1, 1], z = len(pos) > 2 ? [-1, 1] : [1])
-	translate([pos[0] * x, pos[1] * y, len(pos) > 2 ? pos[2] * z : 0])
-	children();
+module transpose(pos = [], x = true, y = true, z = false) {
+	for (
+		_x = x == true ? [-1, 1] : (x && len(x) > 0 ? x : [1]),
+		_y = y == true ? [-1, 1] : (y && len(y) > 0 ? y : [1]),
+		_z = z == true ? [-1, 1] : (z && len(z) > 0 ? z : [1]))
+		translate([pos[0] * _x, pos[1] * _y, len(pos) > 2 ? pos[2] * _z : 0])
+		children();
 }
 
 /************************************************************
@@ -205,31 +254,6 @@ module for_unity3d(scale = 0.001) {
 	rotate([0, 0, 90])
 	scale(scale)
 	children();
-}
-
-/***
- * Chamfers while extruding a 2D shape
- */
-
-module linear_extrude_chamfer(h, chamfer, round = false, center = false, convexity = 1, $fn = $fn) {
-
-	render(convexity = convexity)
-	translate([0, 0, center ? 0 : chamfer])
-	minkowski() {
-
-		// extrude
-		linear_extrude(h - chamfer * 2, center = center)//, convexity = convexity)
-		offset(r = -chamfer)
-		children();
-
-		// this is the chamfer we're interested in
-		if (round)
-			sphere(chamfer, $fn = $fn);
-		else
-			for (z = [-1, 1])
-				scale([1, 1, z])
-				cylinder(h = chamfer, r1 = chamfer, r2 = 0);
-	}
 }
 
 /***
