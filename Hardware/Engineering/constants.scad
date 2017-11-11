@@ -15,6 +15,8 @@ NUT_M3_DIM = [3, 5.7, 2.4];
 
 // SCREWS - [thread dia., head dia., head height, socket dia, socket depth]
 
+SCREW_M1_6_PAN_DIM = [1.6, 2.5, 0.5];
+
 SCREW_M2_FLAT_DIM = [2, 3.8, 1.2];
 SCREW_M2_SOCKET_DIM = [2, 3.8, 2, 1.55, 1];
 

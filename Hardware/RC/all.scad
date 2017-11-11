@@ -7,7 +7,7 @@ include <FCs/all.scad>;
 include <GPS/all.scad>;
 include <Misc./all.scad>;
 include <Motors/all.scad>;
-include <Props/all.scad>;
+include <Propeller.scad>;
 include <Receivers/all.scad>;
 include <Servos/all.scad>;
 include <Video receivers/all.scad>;

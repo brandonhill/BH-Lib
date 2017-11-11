@@ -77,6 +77,7 @@ module screw_surround(
 		// show holes (usually want to difference the holes from final object)
 		holes = false,
 		mock = false,
+		pitch, // no threads if left undefined
 		tolerance = 0,
 
 		// for surround (not hole)
@@ -208,12 +209,21 @@ module screw_surround(
 		translate([0, 0, h - nut_dim[2]])
 		nut(nut_dim[2], nut_dim[1] / 2);
 
-		if (holes) {
+		if (holes || pitch != undef) {
 			translate([0, 0, cs_style != "none" ? dim[2] : 0])
 			scale([1, 1, -1])
-			screw_diff(dim, h, cs_style = cs_style, mock = mock, tolerance = tolerance);
+			screw_diff(
+				dim,
+				h,
+				cs_style = cs_style,
+				mock = mock,
+				pitch = pitch,
+				tolerance = tolerance);
 		}
 	}
+
+	// dim check
+	*#cylinder(h = h, r = r_outer);
 }
 
 module screw_diff(
@@ -221,6 +231,7 @@ module screw_diff(
 		h = 10,
 		depth = 10,
 		cs_style = "none",
+		pitch,
 		tolerance = 0,
 		mock = false,
 	) {
@@ -231,7 +242,10 @@ module screw_diff(
 
 		// thread hole
 		translate([0, 0, -(h + tolerance)])
-		cylinder(h = (h + tolerance), r = dim[0] / 2 + tolerance);
+		if (pitch != undef)
+			thread_iso_metric(dim[0] + tolerance * 2, h + tolerance, pitch, internal = true);
+		else
+			cylinder(h = (h + tolerance), r = dim[0] / 2 + tolerance);
 
 		// head hole
 		translate([0, 0, -0.01])

@@ -97,7 +97,7 @@ module motor_mount_shaft(h, r) {
 module motor_mount_legs(n, width, thickness, r, hole_rad) {
 	for (i = [0 : n - 1]) {
 		rotate([0, 0, 360 / n * i])
-		linear_extrude(thickness)
+		linear_extrude(thickness, convexity = 3)
 		difference() {
 			hull() {
 				translate([r, 0])
