@@ -9,9 +9,10 @@ JACK_USB_MICRO_DIM = [5.8, 7.4, 2.5];
 
 module jack_usb_micro(
 		dim = JACK_USB_MICRO_DIM,
-		tolerance = 0,
+		tolerance,
 	) {
 
+	_tolerance = tolerance != undef ? tolerance : 0;
 	_projection = tolerance > 0 ? 10 : 0;
 
 	color(COLOUR_STEEL)

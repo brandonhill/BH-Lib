@@ -5,6 +5,7 @@
 include <../../../../colours.scad>;
 include <../generic.scad>;
 
+MOTOR_SUNNYSKY_0705_AXLE_RAD = 7; // for bottom clearance
 MOTOR_SUNNYSKY_0705_HEIGHT = 7;
 MOTOR_SUNNYSKY_0705_RAD = 10 / 2;
 MOTOR_SUNNYSKY_0705_MOUNT_ARM_WIDTH = 2.6;

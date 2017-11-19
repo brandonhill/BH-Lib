@@ -21,7 +21,7 @@ module fc_teeny_f4(
 		dim = FC_TEENY_F4_DIM,
 		hole_rad = FC_TEENY_F4_HOLE_RAD,
 		hole_spacing = FC_TEENY_F4_HOLE_SPACING,
-		tolerance,
+		tolerance = 0,
 		usb_pos = FC_TEENY_F4_USB_POS,
 	) {
 
@@ -61,6 +61,3 @@ module fc_teeny_f4(
 		*cube(dim, true);
 	}
 }
-
-*
-fc_teeny_f4();

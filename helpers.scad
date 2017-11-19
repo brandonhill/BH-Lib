@@ -217,13 +217,13 @@ module transpose(pos = [], x = true, y = true, z = false) {
  */
 
 // from http://manual.slic3r.org/advanced/flow-math
-function printExtrusionWidth(nozzle_dia) = nozzle_dia;// * 1.05; // meh
+//function print_width(nozzle_dia) = nozzle_dia;// * 1.05; // meh
 
 // clamps height to multiple of layer height
-function printHeight(n) = PRINT_LAYER * ceil(n / PRINT_LAYER);
+function print_height(n, layer_height = PRINT_LAYER) = layer_height * ceil(n / layer_height);
 
 // clamps width to multiple of extrusion width
-function printWall(n) = printExtrusionWidth(PRINT_NOZZLE) * ceil(n / printExtrusionWidth(PRINT_NOZZLE));
+function print_wall(n, nozzle_dia = PRINT_NOZZLE) = nozzle_dia * ceil(n / nozzle_dia);
 
 // adds tolerance (use where fit requires clearance)
 function toleranceXY(n = 0) = n + TOLERANCE_XY;

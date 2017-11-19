@@ -236,14 +236,12 @@ module screw_diff(
 		mock = false,
 	) {
 
-	$fs = 1; // TODO: parameterize with fa, fn
-
 	union() {
 
 		// thread hole
 		translate([0, 0, -(h + tolerance)])
 		if (pitch != undef)
-			thread_iso_metric(dim[0] + tolerance * 2, h + tolerance, pitch, internal = true);
+			thread_iso_metric(dim[0] + tolerance * 2, h + tolerance, pitch, center = false, internal = true);
 		else
 			cylinder(h = (h + tolerance), r = dim[0] / 2 + tolerance);
 
