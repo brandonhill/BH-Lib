@@ -85,12 +85,14 @@ An OpenSCAD library of useful functions, modules and components.
 * LEDs
 * Pin headers
 * Potentiometers
-* DIP switches
+* DIP, slide, tact switches
+* Stepper motors
 * Voltage regulators
 * Wire
 
 ### Engineering
 
+* Bearings
 * L/T/U beams
 * Nut/screw
 * Threads

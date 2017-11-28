@@ -213,17 +213,17 @@ module transpose(pos = [], x = true, y = true, z = false) {
 /************************************************************
  * PRINTING
  *
- * expects constants PRINT_LAYER, PRINT_NOZZLE, TOLERANCE_XY and TOLERANCE_Z
+ * expects constants PRINT_LAYER_HEIGHT, PRINT_NOZZLE_DIA, TOLERANCE_XY and TOLERANCE_Z
  */
 
 // from http://manual.slic3r.org/advanced/flow-math
 //function print_width(nozzle_dia) = nozzle_dia;// * 1.05; // meh
 
 // clamps height to multiple of layer height
-function print_height(n, layer_height = PRINT_LAYER) = layer_height * ceil(n / layer_height);
+function print_height(n, layer_height = PRINT_LAYER_HEIGHT) = layer_height * ceil(n / layer_height);
 
 // clamps width to multiple of extrusion width
-function print_wall(n, nozzle_dia = PRINT_NOZZLE) = nozzle_dia * ceil(n / nozzle_dia);
+function print_width(n, nozzle_dia = PRINT_NOZZLE_DIA) = nozzle_dia * ceil(n / nozzle_dia);
 
 // adds tolerance (use where fit requires clearance)
 function toleranceXY(n = 0) = n + TOLERANCE_XY;

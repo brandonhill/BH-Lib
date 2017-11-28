@@ -7,6 +7,7 @@
 include <constants.scad>;
 include <nut.scad>;
 include <threads.scad>;
+include <../../2D/semicircle.scad>;
 include <../../3D/cylinder true.scad>;
 
 module screw(
@@ -16,7 +17,7 @@ module screw(
 		head = "socket", // flat, socket
 		offset = 0, // for print tolerance
 		reverse = false,
-		socket = "hex", // hex, star
+		socket, // hex, star
 		threaded = false,
 	) {
 
@@ -53,35 +54,23 @@ module screw_surround(
 		dim = SCREW_M2_FLAT_DIM,
 		h = 20,
 
-		end, // [undef | true (flat) | "rounded" | "point"]
-
-		cs_style = "none",
 		attach_cs = false,
-
-		// wall thickness around hole
-		walls = 1.5,
 		attach_walls = false,
-
-		// nut
+		attach_nut = false, // only applies when attach = true
+		attach = false, // attach to adjoining face
+		cs_style = "none",
+		end, // [undef | true (flat) | "rounded" | "point"]
+		fn, // for surround (not hole)
+		holes = false, // show holes (usually want to difference the holes from final object)
+		inset, // [x, y]; inset from wall (typically used with attach = true)
+		mock = false,
 		nut = false,
 		nut_dim = NUT_M2_DIM,
-		attach_nut = false, // only applies when attach = true
 		nut_walls = 2, // can make beefier than hole walls
-
-		// attach to adjoining face
-		attach = false,
-
-		// inset the hole from a surface (typically used with attach = true)
-		inset,
-
-		// show holes (usually want to difference the holes from final object)
-		holes = false,
-		mock = false,
 		pitch, // no threads if left undefined
+		print_support,
 		tolerance = 0,
-
-		// for surround (not hole)
-		fn,
+		walls = 1.5, // wall thickness around hole
 	) {
 
 	if (end && nut)
@@ -95,6 +84,47 @@ module screw_surround(
 	nut_walls = nut_walls ? nut_walls : walls;
 	r_max = max(dim[1] / 2 + walls, nut_dim[1] / 2 + nut_walls);
 
+	module print_support() {
+		t = max(walls, (r_outer * tan(360 / fn / 2)) * 2);
+		translate([0, 0, h])
+		rotate([-90, 0, -90])
+		linear_extrude(t, center = true)
+		polygon([
+			[0, 0],
+			[-walls / 2, 0],
+			[-walls / 2, h],
+			[0, h],
+			[h * 2/3, 0],
+		]);
+	}
+
+	module surround() {
+
+		// wall
+		translate([0, 0, end == "rounded" ? -_end : 0])
+		if (attach_walls)
+			linear_extrude(h + (end == true ? _end : 0))
+			semicircle(r + walls, $fn = fn);
+		else
+			cylinder(h = h + (end == true ? _end : 0), r = r + walls, $fn = fn);
+
+		if (end == "point" || end == "rounded")
+			translate([0, 0, h])
+			if (attach_walls)
+				difference() {
+					sphere(r_outer, $fn = fn);
+					translate([0, -r_outer])
+					cube(r_outer * 2, true);
+				}
+			else
+				sphere(r_outer, $fn = fn);
+
+		if (end == "point") {
+			translate([0, -r_outer, h + _end])
+			sphere(0.05);
+		}
+	}
+
 	difference() {
 		intersection() {
 
@@ -102,33 +132,17 @@ module screw_surround(
 			cube([r_max * 2, r_max * 2 + _inset, h + _end]);
 
 			union() {
-				hull()
-				{
-
-					// wall
-					translate([0, 0, end == "rounded" ? -_end : 0])
-					cylinder(h = h + (end == true ? _end : 0), r = r + walls, $fn = fn);
-
-					if (end == "point" || end == "rounded")
-						translate([0, 0, h])
-						sphere(r_outer, $fn = fn);
-
-					if (end == "point") {
-						translate([0, -r_outer, h + _end])
-						sphere(0.05);
-					}
+				hull() {
+					surround();
 
 					// adjoining face (meets with wall)
-//					if (attach && attach_walls) {
 					if (attach_walls) {
-						translate([-r - walls, -r - _inset, 0])
-						cube([(r + walls) * 2 , 0.1, h + (end == true ? _end : 0)]);
-
-						if (end == "rounded")
-							translate([0, -r_outer, h])
-							rotate([90, 0])
-							scale([1, 1, -1])
-							cylinder(h = 0.01, r = _end, $fn = fn);
+						translate([0, -r - _inset])
+						rotate([-90, 0])
+						linear_extrude(0.1)
+						projection()
+						rotate([90, 0])
+						surround();
 					}
 				}
 
@@ -222,6 +236,11 @@ module screw_surround(
 		}
 	}
 
+	if (print_support != undef)
+	rotate([0, 0, 90 + print_support])
+	translate([0, -r_outer])
+	print_support();
+
 	// dim check
 	*#cylinder(h = h, r = r_outer);
 }
@@ -230,6 +249,7 @@ module screw_diff(
 		dim = SCREW_M2_SOCKET_DIM,
 		h = 10,
 		depth = 10,
+		conical = false, // for printing
 		cs_style = "none",
 		pitch,
 		tolerance = 0,
@@ -248,6 +268,10 @@ module screw_diff(
 		// head hole
 		translate([0, 0, -0.01])
 		cylinder(h = depth + 0.01, r = dim[1] / 2 + tolerance);
+
+		if (conical)
+		scale([1, 1, -1])
+		cylinder(h = (dim[1] - dim[0]) / 2, r1 = dim[1] / 2 + tolerance, r2 = dim[0] / 2 + tolerance);
 
 		// countersink
 		translate([0, 0, -dim[2]])

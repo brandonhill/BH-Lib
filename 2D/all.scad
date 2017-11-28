@@ -9,6 +9,7 @@ use <rounded square.scad>;
 use <segment.scad>;
 use <semicircle.scad>;
 use <smooth.scad>;
+use <sq.scad>;
 use <star.scad>;
 use <t.scad>;
 use <u.scad>;

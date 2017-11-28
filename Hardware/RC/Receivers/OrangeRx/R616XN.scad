@@ -3,6 +3,7 @@
  */
 
 include <../../../../colours.scad>;
+use <../../../../2D/rounded square.scad>;
 
 // hopefully dim. are bigger because of heat shrink !!!
 //RX_ORANGERX_R616XN_DIM = [16.5, 13, 2.5];//3.7];

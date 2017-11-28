@@ -7,21 +7,6 @@
 use <../../helpers.scad>;
 use <threads.scad>;
 
-// dim = [inner dia., outer dia., height]
-module nut_diff(dim, hole = false, mock = false, tolerance = 0, sides = 6) {
-
-//	rotate([0, 0, 360 / sides / 2])
-	if (hole)
-		nut([dim[0] - tolerance * 2, dim[1] + tolerance * 2, dim[2] + tolerance * 2]);
-	else
-		hull()
-		nut([dim[0] - tolerance * 2, dim[1] + tolerance * 2, dim[2] + tolerance * 2]);
-
-	%
-	if (mock)
-		nut(dim);
-}
-
 module nut(
 		dim,
 		pitch = 0.5,
@@ -83,4 +68,29 @@ module nut(
 		else
 			cylinder(h = height + 0.2, r = dim[0] / 2);
 	}
+}
+
+module nut_diff(
+		dim, // [inner dia., outer dia., height]
+		conical = false, // for printing
+		hole = false,
+		mock = false,
+		tolerance = 0,
+		sides = 6) {
+
+	_dim = [dim[0] - tolerance * 2, dim[1] + tolerance * 2, dim[2] + tolerance * 2];
+
+	translate([0, 0, -tolerance])
+	if (hole)
+		nut(dim = _dim, sides = sides);
+	else
+		hull()
+		nut(dim = _dim, sides = sides);
+
+	if (conical)
+	translate([0, 0, dim[2] + tolerance - 0.1])
+	cylinder_true(h = (dim[1] - dim[0]) / 2 + 0.1, r1 = (dim[1] / 2 + tolerance) / cos(360 / sides / 2), r2 = dim[0] / 2, center = false);
+
+	if (mock)
+	% nut(dim);
 }

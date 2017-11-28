@@ -2,7 +2,7 @@
 // rounded gear shape
 // s = scale; [inner, outer]
 
-module rounded_gear(r = 10, n = 3, inset = true, s = [1, 1], $fn = $fn) {
+module rounded_gear(r = 10, n = 3, inset = true, s = [1, 1]) {
 
 	knob_angle = 360 / n / 4;
 	knob_point_rad = sin(knob_angle) * r;
@@ -19,7 +19,7 @@ module rounded_gear(r = 10, n = 3, inset = true, s = [1, 1], $fn = $fn) {
 				rotate([0, 0, 360 / n * i])
 				translate([r, 0])
 				scale([s[1], 1])
-				circle(knob_point_rad, $fn);
+				circle(knob_point_rad);
 		}
 
 		rotate([0, 0, 360 / n / 2])
@@ -27,6 +27,6 @@ module rounded_gear(r = 10, n = 3, inset = true, s = [1, 1], $fn = $fn) {
 			rotate([0, 0, 360 / n * i])
 			translate([r, 0])
 			scale([s[0], 1])
-			circle(knob_point_rad, $fn);
+			circle(knob_point_rad);
 	}
 }
