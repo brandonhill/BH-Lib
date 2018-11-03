@@ -10,7 +10,7 @@ CAM_RUNCAM_SWIFT_MICRO_HOUSING_DIM = [
 	CAM_RUNCAM_SWIFT_MICRO_BOARD_DIM[0],
 	CAM_RUNCAM_SWIFT_MICRO_BOARD_DIM[1],
 	7];
-CAM_RUNCAM_SWIFT_MICRO_LENS_HEIGHTS = [2, 2.7, 3];
+CAM_RUNCAM_SWIFT_MICRO_LENS_HEIGHTS = [2, 3, 3];
 CAM_RUNCAM_SWIFT_MICRO_PIVOT_OFFSET = -11.5;
 CAM_RUNCAM_SWIFT_MICRO_RAD = [10.25, 7, 12] / 2;
 CAM_RUNCAM_SWIFT_MICRO_DIM = [
@@ -26,6 +26,7 @@ module cam_runcam_swift_micro(
 		dim = CAM_RUNCAM_SWIFT_MICRO_DIM,
 		housing_dim = CAM_RUNCAM_SWIFT_MICRO_HOUSING_DIM,
 		lens_heights = CAM_RUNCAM_SWIFT_MICRO_LENS_HEIGHTS,
+		pivot_offset = CAM_RUNCAM_SWIFT_MICRO_PIVOT_OFFSET,
 		rads = CAM_RUNCAM_SWIFT_MICRO_RAD,
 	) {
 
@@ -76,7 +77,7 @@ module cam_runcam_swift_micro(
 	}
 
 	module housing() {
-		linear_extrude(housing_dim[2])
+		linear_extrude(housing_dim[2], convexity = 2)
 		shape_housing();
 	}
 
@@ -96,7 +97,7 @@ module cam_runcam_swift_micro(
 				}
 			}
 
-			translate([0, 0, sum(lens_heights)])
+			*translate([0, 0, sum(lens_heights)])
 			cylinder(h = lens_heights[2], r = rads[2] * 0.9, center = true);
 		}
 	}
@@ -109,13 +110,19 @@ module cam_runcam_swift_micro(
 		translate([0, 0, board_dim[2]]) {
 
 			color(COLOUR_ORANGE)
-			housing();
+			difference() {
+				housing();
+
+				translate([0, 0, -pivot_offset - board_dim[2]])
+				rotate([0, 90])
+				cylinder(h = board_dim[0] + 1, r = 1, center = true);
+			}
 			translate([0, 0, housing_dim[2]]) {
 
 				lens_body();
 			}
 
-			color(COLOUR_RED_DARK)
+			*color(COLOUR_RED_DARK)
 			translate([0, 0, housing_dim[2] + sum(lens_heights) - 1])
 			scale([1, 1, 0.25])
 			intersection() {

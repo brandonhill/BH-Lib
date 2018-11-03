@@ -1,20 +1,22 @@
 /******************************************************************************
- * Omnibus F3 Pro flight controller
+ * Racerstar RS20Ax4 ESC
  */
 
 include <../../../../colours.scad>;
+include <../../../../helpers.scad>;
 
-FC_OMNIBUS_F3_PRO_BOARD_THICKNESS = 1.6;
-FC_OMNIBUS_F3_PRO_DIM = [36, 36, 7.6];
-FC_OMNIBUS_F3_PRO_HOLE_RAD = 1.5; // M3
-FC_OMNIBUS_F3_PRO_HOLE_SPACING = [30.5, 30.5];
+ESC_RACERSTAR_RS20AX4_BOARD_THICKNESS = 1.6;
+ESC_RACERSTAR_RS20AX4_DIM = [36, 36, 5.4];
+ESC_RACERSTAR_RS20AX4_HOLE_RAD = 3 / 2;
+ESC_RACERSTAR_RS20AX4_HOLE_SPACING = [30.5, 30.5];
 
-module fc_omnibus_f3_pro(
-		board_thickness = FC_OMNIBUS_F3_PRO_BOARD_THICKNESS,
+module esc_racerstar_rs20ax4(
+		board_thickness = ESC_RACERSTAR_RS20AX4_BOARD_THICKNESS,
 		colour = COLOUR_GREY_DARK,
-		dim = FC_OMNIBUS_F3_PRO_DIM,
-		hole_rad = FC_OMNIBUS_F3_PRO_HOLE_RAD,
-		hole_spacing = FC_OMNIBUS_F3_PRO_HOLE_SPACING,
+		dim = ESC_RACERSTAR_RS20AX4_DIM,
+		hole_rad = ESC_RACERSTAR_RS20AX4_HOLE_RAD,
+		hole_spacing = ESC_RACERSTAR_RS20AX4_HOLE_SPACING,
+		tolerance = 0,
 	) {
 
 	comp_thickness = (dim[2] - board_thickness) / 2;
@@ -43,4 +45,4 @@ module fc_omnibus_f3_pro(
 }
 
 *
-fc_omnibus_f3_pro();
+esc_racerstar_rs20ax4();

@@ -1,19 +1,20 @@
 /******************************************************************************
- * FrSky XM+ micro full range receiver
+ * FrSky XM micro full range receiver
  */
 
 include <../../../../colours.scad>;
 include <../../../Electrical/constants.scad>;
 
-RX_FRSKY_XM_PLUS_BOARD_DIM = [22, 13, 0.85];
-RX_FRSKY_XM_PLUS_DIM = [RX_FRSKY_XM_PLUS_BOARD_DIM[0], RX_FRSKY_XM_PLUS_BOARD_DIM[1], 3.5];
+RX_FRSKY_XM_BOARD_DIM = [18, 13, 0.85];
+RX_FRSKY_XM_DIM = [RX_FRSKY_XM_BOARD_DIM[0], RX_FRSKY_XM_BOARD_DIM[1], 3.5];
 
-module rx_frsky_xm_plus(
+module rx_frsky_xm(
 		ant_rad = 0.5,
-		board_dim = RX_FRSKY_XM_PLUS_BOARD_DIM,
-		dim = RX_FRSKY_XM_PLUS_DIM,
+		board_dim = RX_FRSKY_XM_BOARD_DIM,
+		dim = RX_FRSKY_XM_DIM,
 		color_ant = COLOUR_GREY_DARK,
 		color_io = [COLOUR_GREY_DARK, COLOUR_RED, COLOUR_WHITE],
+		color_rx = COLOUR_GREY_DARK,
 		center = true, // "board" || true || false
 	) {
 
@@ -37,8 +38,7 @@ module rx_frsky_xm_plus(
 
 				// antenna
 				color(color_ant)
-				for (i = [0 : 1])
-				translate([dim[0] / 2, -dim[1] / 2 + PIN_HEADER_PITCH * (i + 1), dim[2] * 0.25])
+				translate([dim[0] / 2, -dim[1] / 2 + PIN_HEADER_PITCH / 2])
 				rotate([0, 90, 0])
 				cylinder(h = 2, r = ant_rad);
 
@@ -59,4 +59,4 @@ module rx_frsky_xm_plus(
 }
 
 *
-rx_frsky_xm_plus();
+rx_frsky_xm();

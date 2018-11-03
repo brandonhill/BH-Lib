@@ -9,7 +9,7 @@ use <threads.scad>;
 
 module nut(
 		dim,
-		pitch = 0.5,
+		pitch,
 		sides = 6,
 		threaded = false,
 		wings = false, // butterfly
@@ -23,7 +23,7 @@ module nut(
 		if (wings) {
 			union() {
 				hull() {
-					#translate([0, 0, (width - dim[0])])
+					translate([0, 0, (width - dim[0])])
 					rotate_extrude()
 					translate([width / 2 - (width - dim[0]) / 2, 0, 0])
 					circle(r = (width - dim[0]) / 2);
@@ -64,7 +64,7 @@ module nut(
 
 		translate([0, 0, -0.1])
 		if (threaded)
-			thread_iso_metric(dim[0], height + 0.2, pitch, internal = true);
+			thread_iso_metric(dim[0], height + 0.2, pitch, center = false, internal = true);
 		else
 			cylinder(h = height + 0.2, r = dim[0] / 2);
 	}
@@ -89,7 +89,7 @@ module nut_diff(
 
 	if (conical)
 	translate([0, 0, dim[2] + tolerance - 0.1])
-	cylinder_true(h = (dim[1] - dim[0]) / 2 + 0.1, r1 = (dim[1] / 2 + tolerance) / cos(360 / sides / 2), r2 = dim[0] / 2, center = false);
+	cylinder_true(h = (dim[1] - dim[0]) / 2 + 0.1, r1 = _dim[1] / 2 + tolerance, r2 = _dim[0] / 2 + tolerance, center = false, $fn = sides);
 
 	if (mock)
 	% nut(dim);

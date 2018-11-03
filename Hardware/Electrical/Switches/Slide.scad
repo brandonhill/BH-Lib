@@ -13,8 +13,7 @@ SWITCH_SLIDE_SM_HOLE_RAD = 1.25;
 SWITCH_SLIDE_SM_HOLE_SPACING = 15;
 
 module pos_switch_slide_screws(hole_spacing) {
-	reflect(y = false)
-	translate([hole_spacing / 2, 0])
+	transpose([hole_spacing / 2, 0])
 	children();
 }
 

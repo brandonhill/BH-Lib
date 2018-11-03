@@ -5,6 +5,14 @@
 include <constants.scad>;
 
 /***
+ * Converts vec3 to vec2 (drops 2nd index)
+ */
+
+function vec3toVec2(points) = [
+		for (i = [0 : len(points) - 1]) [points[i][0], points[i][1]]
+	];
+
+/***
  * Circumference of a circle
  */
 
@@ -25,6 +33,25 @@ function clamp(value, v1, v2) =
 function contains(needle, haystack) = index_of(needle, haystack) >= 0;
 
 /***
+ * Trig in radians - accepts degree or radian argument
+ */
+
+function acosr(a, deg) = deg_to_rad(acos(a));
+function cosr(a, deg) = cos(deg != undef ? deg : rad_to_deg(a));
+
+function asinr(a, deg) = deg_to_rad(asin(a));
+function sinr(a, deg) = sin(deg != undef ? deg : rad_to_deg(a));
+
+function atanr(a) = deg_to_rad(atan(a));
+function tanr(a, deg) = tan(deg != undef ? deg : rad_to_deg(a));
+
+/***
+ * Convert degrees to radians
+ */
+
+function deg_to_rad(a) = a * PI / 180;
+
+/***
  * Determines $fn for given $fa/$fs
  *
  * See: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#.24fa.2C_.24fs_and_.24fn
@@ -43,6 +70,18 @@ function get_fragments_from_r(r, fa = $fa, fn = $fn, fs = $fs) =
  */
 
 function helix_angle(r, pitch) = atan(pitch / (PI * 2 * r));
+
+/***
+ * Gets pitch of a helix at given angle and radius
+ */
+
+function helix_pitch(a, r) = tan(a) * PI * 2 * r;
+
+/***
+ * Removes empties
+ */
+
+function filter(v, _acc = [], _i = 0) = _i >= len(v) ? _acc : filter(v, concat(_acc, v[_i] != undef && len(v[_i]) ? [v[_i]] : []), _i + 1);
 
 /***
  * Find index of a given value, -1 if not found
@@ -140,6 +179,13 @@ function oscillate(min = -1, max = 1, t = $t) = (
 );
 
 /***
+ * Convert polar to cartesian coordinates
+ */
+
+function polar_to_cartesian (a, r) = [ cos(a) * r,  -sin(a) * r];
+function polar_to_cartesianr(a, r) = [cosr(a) * r, -sinr(a) * r];
+
+/***
  * Creates array of polygon coordinates with faces at radius. Used for nuts and
  * critical internal radii. (Low poly `circle` has points at radius, so
  * effective radius is considerably reduced.)
@@ -153,7 +199,13 @@ function poly_coords(n, r = 1, mid = true) = [
 ];
 
 /***
- * Point transformations
+ * Convert radians to degrees
+ */
+
+function rad_to_deg(a) = a * 180 / PI;
+
+/***
+ * Point rotations
  */
 
 function rotate_point_x(p, a) =

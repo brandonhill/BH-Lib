@@ -9,26 +9,33 @@ include <nut.scad>;
 include <threads.scad>;
 include <../../2D/semicircle.scad>;
 include <../../3D/cylinder true.scad>;
+include <../../3D/sphere true.scad>;
+use <washer.scad>;
 
 module screw(
 		dim = SCREW_M2_SOCKET_DIM,
 		h = 10,
 		pitch = 0.25,
-		head = "socket", // flat, socket
+		head = "socket", // bolt, flat, socket
 		offset = 0, // for print tolerance
 		reverse = false,
 		socket, // hex, star
 		threaded = false,
+		washer_dim = false,
 	) {
 
-	translate([0, 0, head == "flat" ? -dim[2] : 0]) {
+	if (washer_dim)
+	washer(washer_dim);
+
+	translate([0, 0, head == "flat" ? -dim[2] : 0])
+	translate([0, 0, washer_dim ? washer_dim[2] : 0]) {
 
 		// head
 		difference() {
 			if (head == "flat") {
 				cylinder(h = dim[2], r2 = dim[1] / 2, r1 = dim[0] / 2);
-			} else if (head == "socket") {
-				cylinder(h = dim[2], r = dim[1] / 2);
+			} else if (head == "bolt" || head == "socket") {
+				cylinder_true(h = dim[2], r = dim[1] / 2, center = false, $fn = head == "bolt" ? 6 : $fn);
 			}
 
 			// socket
@@ -104,20 +111,20 @@ module screw_surround(
 		translate([0, 0, end == "rounded" ? -_end : 0])
 		if (attach_walls)
 			linear_extrude(h + (end == true ? _end : 0))
-			semicircle(r + walls, $fn = fn);
+			semicircle_true(r_outer, $fn = fn);
 		else
-			cylinder(h = h + (end == true ? _end : 0), r = r + walls, $fn = fn);
+			cylinder_true(h = h + (end == true ? _end : 0), r = r_outer, $fn = fn, center = false);
 
 		if (end == "point" || end == "rounded")
 			translate([0, 0, h])
 			if (attach_walls)
 				difference() {
-					sphere(r_outer, $fn = fn);
+					sphere_true(r_outer, $fn = fn);
 					translate([0, -r_outer])
 					cube(r_outer * 2, true);
 				}
 			else
-				sphere(r_outer, $fn = fn);
+				sphere_true(r_outer, $fn = fn);
 
 		if (end == "point") {
 			translate([0, -r_outer, h + _end])
@@ -266,7 +273,7 @@ module screw_diff(
 			cylinder(h = (h + tolerance), r = dim[0] / 2 + tolerance);
 
 		// head hole
-		translate([0, 0, -0.01])
+//		translate([0, 0, -0.01])
 		cylinder(h = depth + 0.01, r = dim[1] / 2 + tolerance);
 
 		if (conical)

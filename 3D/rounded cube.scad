@@ -4,7 +4,7 @@
 
 use <../helpers.scad>;
 
-module rounded_cube(dim, r, edges = false, center = true, $fa = $fa, $fn = $fn, $fs = $fs) {
+module rounded_cube(dim, r, edges = false, center = true) {
 
 	_dim = dim[0] && dim[1] && dim[2] ? dim : [dim, dim, dim];
 	_r = min(r, min(_dim) / 2);
@@ -22,8 +22,8 @@ module rounded_cube(dim, r, edges = false, center = true, $fa = $fa, $fn = $fn, 
 		reflect(z = [-1, 1])
 		translate([_dim[0] / 2 - _r, _dim[1] / 2 - _r, _dim[2] / 2 - _r])
 		if (edges)
-			sphere_true(_r, $fa = $fa, $fn = $fn, $fs = $fs);
+			sphere_true(_r);
 		else
-			sphere(_r, $fa = $fa, $fn = $fn, $fs = $fs);
+			sphere(_r);
 	}
 }

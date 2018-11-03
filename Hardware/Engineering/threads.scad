@@ -1,8 +1,7 @@
 /******************************************************************************
  * Threads
  *
- * - `internal = true` has issues in preview mode (artifacts, normalized tree too big)
- * - renders fine, but throws "Polyset has nonplanar faces" warnings
+ * - `internal = true` has artifacts in preview mode but renders fine
  *
  * See: https://en.wikipedia.org/wiki/ISO_metric_screw_thread
  */
@@ -17,13 +16,14 @@ module thread_iso_metric(
 		internal = false, // i.e. when differencing
 		reverse = false,
 		starts = 1,
+		tolerance = 0,
 	) {
 
 	d_minor = d - (5 * sqrt(3)) / 8 * pitch;
 	H = pitch / (2 * tan(30));
 	direction = reverse ? -1 : 1;
-	r_inner = d_minor / 2 - H / 4;
-	r_outer = d / 2 + H / 8;
+	r_inner = d_minor / 2 - H / 4 - tolerance * (internal ? -1 : 1);
+	r_outer = d / 2 + H / 8 - tolerance * (internal ? -1 : 1);
 	steps = get_fragments_from_r(d / 2);
 
 	a = 360 / steps;
@@ -37,13 +37,17 @@ module thread_iso_metric(
 
 	points = concat(profile, translate_points(rotate_points(profile, [0, 0, a]), [0, 0, dz]));
 
+//	1---4
+//	| \ : \
+//	|  0---3
+//	| / : /
+//	2---5
+
 	faces = [
-		[0, 1, 4, 3], // top
-		[0, 3, 5, 2], // bottom
-		[4, 1, 2, 5], // back
-		// sides
-		[0, 2, 1],
-		[3, 4, 5],
+		[0, 1, 4], [0, 4, 3], // top
+		[0, 3, 2], [2, 3, 5], // bottom
+		[4, 1, 2], [4, 2, 5], // back
+		[0, 2, 1], [3, 4, 5], // sides
 	];
 
 	intersection() {
@@ -54,7 +58,7 @@ module thread_iso_metric(
 		union() {
 
 			// inner
-			cylinder(h = h, r = d_minor / 2 - (internal ? 0 : H / 4), center = center, $fn = steps);
+			cylinder(h = h, r = d_minor / 2 - (internal ? -tolerance : H / 4 + tolerance), center = center, $fn = steps);
 
 			// thread
 			for (start = [0 : starts - 1],

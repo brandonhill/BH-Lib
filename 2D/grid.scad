@@ -1,7 +1,7 @@
 // ****************************************************************************
 // Grid (for reinforcement, for example)
 
-module grid(coords = [100, 100], x = 10, y = 10, walls = 1, edges = false, center = false) {
+module grid(coords = [100, 100], x = 10, y = 10, walls = 1, edges = false, center = true) {
 
 	hole = [
 		(coords[0] - walls * (x + (edges ? 1 : -1))) / x,

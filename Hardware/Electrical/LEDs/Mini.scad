@@ -4,8 +4,6 @@
 
 include <../../../colours.scad>;
 
-$fs = 0.1;
-
 LED_MINI_DIM = [3, 6]; // [dia., height]
 
 module led_mini(

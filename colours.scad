@@ -5,6 +5,7 @@
 // named
 COLOUR_BLACK = "black";
 COLOUR_BLUE = [0, 0.5, 0.8];
+COLOUR_BLUE_DARK = [0, 0.25, 0.4];
 COLOUR_BROWN = [0.5, 0.25, 0];
 COLOUR_BROWN_LIGHT = [0.75, 0.5, 0];
 COLOUR_COPPER = [0.75, 0.4, 0];

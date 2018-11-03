@@ -9,7 +9,7 @@ include <../../constants.scad>;
 // 5/16"
 NUT_I_5_16_DIM = [5/16 * MMPI, 13, 8];
 
-NUT_M2_DIM = [2, 4, 2];
+NUT_M2_DIM = [2, 3.9, 1.5];
 NUT_M3_DIM = [3, 5.5, 2.4];
 NUT_M4_DIM = [4, 7, 3.2];
 
@@ -36,3 +36,6 @@ THREAD_PITCH_M3_FINE = 0.35;
 THREAD_PITCH_M4_COARSE = 0.7;
 THREAD_PITCH_M4_FINE = 0.5;
 
+// WASHERS
+
+WASHER_M2_DIM = [2.2, 5, 0.3];
