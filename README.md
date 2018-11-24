@@ -2,9 +2,11 @@
 
 An OpenSCAD library of useful functions, modules and components.
 
+![OpenSCAD library](https://github.com/brandonhill/BH-Lib/blob/master/sample.png)
+
 ### Notes
 
-* All shapes and solids default to `center = true`, though component mocks are positioned to suit their typical use case (e.g. screws are aligned with head in positive and shank in negaitve y axis).
+* All shapes and solids default to `center = true`, though component mocks are positioned to suit their typical use case (e.g. screws are aligned with head in positive and shank in negative y axis).
 
 ## Constants
 
@@ -59,6 +61,7 @@ An OpenSCAD library of useful functions, modules and components.
 * `semicircle_true(r = 1, $fa = $fa, $fn = $fn, $fs = $fs)` - half a circle, with edges at radius (instead of points)
 * `smooth(r)` - applies two consective `offset`s to achieve a simple smoothing effect
 * `smooth_acute(r = 0, dim = [1000, 1000])` - smoothing, but also applies to acute angles
+* `sq(dim, center = true)` - convenience wrapper for centred square; handles dimension array lengths > 2
 * `star(r, n = 5, inset = 0.5)` - makes star shapes with given side inset
 * `t(dim = [10, 10], t = 1, t1, t2)` - "T" shape, for beams
 * `u(dim = [10, 10], t = 1, t1, t2)` - "U" shape, for beams
@@ -81,22 +84,26 @@ An OpenSCAD library of useful functions, modules and components.
 * Buzzer
 * Chip
 * Connectors
+* Displays
 * Jacks
 * LEDs
 * Pin headers
 * Potentiometers
-* DIP, slide, tact switches
 * Stepper motors
+* Switches (DIP, slide, tact)
 * Voltage regulators
 * Wire
 
 ### Engineering
 
+* Beams (L/T/U)
 * Bearings
-* L/T/U beams
-* Nut/screw
+* Gears
+* Nuts
+* Screws
 * Threads
 * Truss
+* Washers
 
 ### Mechanical
 

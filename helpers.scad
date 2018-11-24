@@ -52,18 +52,17 @@ function tanr(a, deg) = tan(deg != undef ? deg : rad_to_deg(a));
 function deg_to_rad(a) = a * PI / 180;
 
 /***
- * Determines $fn for given $fa/$fs
+ * Determines $fn for given r, [$fa, $fn, $fs]
  *
  * See: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#.24fa.2C_.24fs_and_.24fn
  */
 
-function get_fragments_from_r(r, fa = $fa, fn = $fn, fs = $fs) =
-// 	(r < GRID_FINE) ? 3 : (
-		(fn > 0) ?
-			(fn >= 3 ? fn : 3) :
-			ceil(max(min(360 / fa, r * 2 * PI / fs), 5))
-// 	)
-;
+function get_fragments_from_r(r) =
+ 	(r < 1 / pow(1024, 2)) ? 3 : (
+		($fn > 0) ?
+			($fn >= 3 ? $fn : 3) :
+			ceil(max(min(360 / $fa, r * 2 * PI / $fs), 5))
+ 	);
 
 /***
  * Gets angle of a helix at given radius and pitch

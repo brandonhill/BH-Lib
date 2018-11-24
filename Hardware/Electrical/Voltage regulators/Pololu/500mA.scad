@@ -3,7 +3,6 @@
  */
 
 include <../../../../colours.scad>;
-//include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/Components/_constants.scad>;
 include <../../Chip.scad>;
 
 VREG_POLOLU_500MA_STEP_DOWN = [12.7, 10.2, 2.54];

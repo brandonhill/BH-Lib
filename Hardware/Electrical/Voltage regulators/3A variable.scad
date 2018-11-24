@@ -3,8 +3,6 @@
  */
 
 include <../../../colours.scad>;
-//include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/bh_lib.scad>;
-//include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/Components/_constants.scad>;
 include <../Chip.scad>;
 include <../Pots/Micro.scad>;
 

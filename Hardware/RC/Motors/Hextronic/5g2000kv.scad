@@ -1,12 +1,10 @@
 // ****************************************************************************
 // Hextronic 5g 2000kV motor
 
-include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/bh_lib.scad>;
-include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/_colours.scad>;
+include <../../../../colours.scad>;
+include <../generic.scad>;
 
-include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/Components/Motors/_common.scad>;
-
-// 
+//
 MOTOR_HXT_5G2000KV_HEIGHT = 7;
 MOTOR_HXT_5G2000KV_RAD = 7;
 MOTOR_HXT_5G2000KV_MOUNT_HEIGHT = 2;
@@ -31,5 +29,5 @@ module motor_turnigy_a1309() {
 	);
 }
 
-//*
+*
 motor_turnigy_a1309();

@@ -4,11 +4,11 @@
  * - greater tolerances tend to be required for greater helix angles
  */
 
-include <../../2D/circle true.scad>;
-include <../../2D/smooth.scad>;
-include <../../3D/cylinder true.scad>;
+use <../../2D/circle true.scad>;
+use <../../2D/smooth.scad>;
+use <../../3D/cylinder true.scad>;
 include <../../constants.scad>;
-include <../../helpers.scad>;
+use <../../helpers.scad>;
 
 function gear_base_rad(contact_angle, teeth, pitch) = gear_pitch_rad(teeth, pitch) * cos(contact_angle);
 
@@ -26,8 +26,7 @@ module shape_gear(
 		inside = false, // can also pass desired `r` here
 		limits = true, // render inner circle and clip teeth tips
 		pitch,
-		r_shaft,
-		spokes = 3, // when inside=false
+		r_shaft = 0.5,
 		teeth,
 		tolerance = 0,
 	) {
@@ -40,7 +39,6 @@ module shape_gear(
 	r_inner = gear_inner_rad(contact_angle, teeth, pitch, inside);
 	r_outer = gear_outer_rad(teeth, pitch, inside);
 	radians_per_tooth = deg_to_rad(deg_per_tooth);
-	spoke_w = r_base * 0.2;
 	steps = get_fragments_from_r(pitch / 8);
 
 	tooth_profile = filter(concat(
@@ -82,34 +80,6 @@ module shape_gear(
 			if (limits)
 			circle(r_outer);
 		}
-
-		// spokes
-		if (!inside && spokes) {
-			difference() {
-				smooth(spoke_w / 4)
-				difference() {
-					circle(r_base);
-
-					difference() {
-						union() {
-
-							// hub
-							circle(r_shaft * 2);
-
-							// spokes
-							for (i = [0 : spokes - 1]) {
-								rotate([0, 0, 360 / spokes * i])
-								translate([r_base / 2, 0])
-								square([r_base, spoke_w], true);
-							}
-						}
-					}
-				}
-
-				// shaft
-				#circle(r_shaft);
-			}
-		}
 	}
 
 	// dim checks
@@ -129,16 +99,46 @@ module shape_gear(
 	circle(0.01);
 }
 
+module shape_gear_spoke_cutouts(
+		contact_angle,
+		pitch,
+		r_hole = 0.5,
+		spokes = 3,
+		teeth,
+	) {
+
+	r_inner = gear_inner_rad(contact_angle, teeth, pitch);
+	spoke_w = r_inner * 0.2;
+
+	// spokes
+	if (spokes)
+	smooth(spoke_w / 2)
+	difference() {
+		circle(r_inner * 0.8);
+
+		// hub
+		circle(r_hole * 3);
+
+		// spokes
+		for (i = [0 : spokes - 1]) {
+			rotate([0, 0, 360 / spokes * i])
+			translate([r_inner / 2, 0])
+			square([r_inner, spoke_w], true);
+		}
+	}
+}
+
 module gear(
 		contact_angle = 20,
 		center = true,
-		h,
+		h = 1,
 		helix = 0,
 		herringbone = false,
 		inside = false, // can also pass desired `r` here
 		pitch,
-		r_hole,
-		teeth,
+		r_hole = 1,
+		spokes = 3,
+		teeth = 6,
 		tolerance = 0,
 	) {
 
@@ -146,20 +146,20 @@ module gear(
 	r_inner = gear_inner_rad(contact_angle, teeth, pitch, inside);
 	r_outer = inside && inside != true ? inside : gear_outer_rad(teeth, pitch, inside);
 
-	translate([0, 0, center ? (herringbone ? 0 : h / 2) : (herringbone ? h / 2 : 0)])
+	translate([0, 0, center ? 0 : h / 2])
 	intersection() {
 		difference() {
 			union() {
 				for (z = herringbone ? [-1, 1] * (inside ? -1 : 1) : [1])
 				scale([1, 1, z])
-				linear_extrude(herringbone ? h / 2 : h, twist = 360 / helix_pitch * h * (inside ? -1 : 1), convexity = 4)
-					shape_gear(
-						contact_angle = contact_angle,
-						limits = inside,
-						inside = inside ? r_outer + 1 : false,
-						pitch = pitch,
-						teeth = teeth,
-						tolerance = tolerance);
+				linear_extrude(herringbone ? h / 2 : h, twist = 360 / helix_pitch * h * (inside ? -1 : 1), center = !herringbone, convexity = 4)
+				shape_gear(
+					contact_angle = contact_angle,
+					limits = inside,
+					inside = inside ? r_outer + 1 : false,
+					pitch = pitch,
+					teeth = teeth,
+					tolerance = tolerance);
 
 				// define hole/inner/outer faces here (not in shape) to simplify twisted but straight faces
 
@@ -175,6 +175,16 @@ module gear(
 			// inner
 			if (inside)
 			cylinder_true(h = h, r = r_inner + tolerance / 2);
+
+			// spoke cutouts
+			if (!inside)
+			linear_extrude(h + 0.2, center = true, convexity = 3)
+			shape_gear_spoke_cutouts(
+				contact_angle = contact_angle,
+				pitch = pitch,
+				r_hole = r_hole,
+				spokes = spokes,
+				teeth = teeth);
 		}
 
 		// outer
@@ -184,14 +194,18 @@ module gear(
 
 module gear_pair(
 		contact_angle = 20,
-		h1 = 2,
-		h2 = 2,
+		h_pinion = 2,
+		h_spur = 2,
 		helix = 15,
 		herringbone = true,
 		pitch = 2,
+		r_hole_pinion = 1,
+		r_hole_spur = 1,
+		spokes_pinion = 0,
+		spokes_spur = 3,
 		teeth_pinion = 6,
 		teeth_spur = 28,
-		tolerance = 0.15,
+		tolerance = 0,
 	) {
 
 	r_pinion = gear_pitch_rad(teeth_pinion, pitch);
@@ -205,10 +219,12 @@ module gear_pair(
 	rotate([0, 0, teeth_rot_pinion / teeth_pinion * 360])
 	gear(
 		contact_angle = contact_angle,
-		h = h1,
+		h = h_pinion,
 		helix = helix,
 		herringbone = herringbone,
 		pitch = pitch,
+		r_hole = r_hole_pinion,
+		spokes = spokes_pinion,
 		teeth = teeth_pinion,
 		tolerance = tolerance);
 
@@ -216,10 +232,12 @@ module gear_pair(
 	rotate([0, 0, teeth_rot_spur / teeth_spur * 360])
 	gear(
 		contact_angle = contact_angle,
-		h = h2,
+		h = h_spur,
 		helix = -helix,
 		herringbone = herringbone,
 		pitch = pitch,
+		r_hole = r_hole_spur,
+		spokes = spokes_spur,
 		teeth = teeth_spur,
 		tolerance = tolerance);
 }
@@ -300,13 +318,30 @@ module planetary_gear_bearing(
 	}
 }
 
+*gear(
+	h = 5,
+	pitch = 2,
+	r_hole = 1,
+	teeth = 12
+);
 
-*
-gear_pair();
+*gear(
+	h = 5,
+	inside = 10,
+	pitch = 2,
+	teeth = 26
+);
 
-*
-planetary_gear_bearing(
-	dim = [16, 45, 6],
+*gear_pair(
+	h_pinion = 4,
+	h_spur = 4,
+	teeth_pinion = 12,
+	teeth_spur = 32,
+	tolerance = 0.1
+);
+
+*planetary_gear_bearing(
+	dim = [16, 45, 10],
 	pitch = 4,
 	planets = 6,
 	teeth_sun = 18,

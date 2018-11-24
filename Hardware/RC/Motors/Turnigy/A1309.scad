@@ -1,10 +1,8 @@
 // ****************************************************************************
 // Turnigy A1309 motor
 
-include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/bh_lib.scad>;
-include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/_colours.scad>;
-
-include </Users/brandon/Google Drive/Documents/3D/OpenSCAD/Components/Motors/_common.scad>;
+include <../../../../colours.scad>;
+include <../generic.scad>;
 
 MOTOR_TURNIGY_A1309_BELL_HEIGHT = 4;
 MOTOR_TURNIGY_A1309_HEIGHT = 9.45;
@@ -19,9 +17,9 @@ MOTOR_TURNIGY_A1309_SHAFT_HEIGHT = 3.9;
 MOTOR_TURNIGY_A1309_SHAFT_RAD = 0.75;
 
 module motor_turnigy_a1309() {
-	
+
 	top_height = MOTOR_TURNIGY_A1309_HEIGHT - MOTOR_TURNIGY_A1309_BELL_HEIGHT - MOTOR_TURNIGY_A1309_MOUNT_HEIGHT - 1;
-	
+
 	color(COLOUR_GREY_DARK) {
 		motor_mount_legs(
 			3,
@@ -30,7 +28,7 @@ module motor_turnigy_a1309() {
 			MOTOR_TURNIGY_A1309_MOUNT_RAD,
 			MOTOR_TURNIGY_A1309_MOUNT_HOLE_RAD
 		);
-		
+
 		motor_base(
 			(MOTOR_TURNIGY_A1309_MOUNT_HEIGHT) * 0.95,
 			MOTOR_TURNIGY_A1309_RAD,
@@ -38,20 +36,20 @@ module motor_turnigy_a1309() {
 			arm_width = MOTOR_TURNIGY_A1309_MOUNT_ARM_WIDTH
 		);
 	}
-	
+
 	translate([0, 0, MOTOR_TURNIGY_A1309_MOUNT_HEIGHT]) {
 		motor_bell(
 			MOTOR_TURNIGY_A1309_BELL_HEIGHT,
 			MOTOR_TURNIGY_A1309_RAD,
 			poles = 12
 		);
-		
+
 		motor_stator(
 			MOTOR_TURNIGY_A1309_BELL_HEIGHT,
 			MOTOR_TURNIGY_A1309_RAD - 1.6,
 			poles = 9
 		);
-		
+
 		color(COLOUR_GREY_DARK)
 		translate([0, 0, MOTOR_TURNIGY_A1309_BELL_HEIGHT]) {
 			translate([0, 0, top_height])
@@ -64,13 +62,13 @@ module motor_turnigy_a1309() {
 			);
 		}
 	}
-	
+
 	color(COLOUR_GREY_DARK)
 	cylinder(
 		h = MOTOR_TURNIGY_A1309_HEIGHT,
 		r = MOTOR_TURNIGY_A1309_SHAFT_RAD * 2
 	);
-	
+
 	color(COLOUR_STEEL)
 	cylinder(
 		h = MOTOR_TURNIGY_A1309_HEIGHT + MOTOR_TURNIGY_A1309_SHAFT_HEIGHT,
