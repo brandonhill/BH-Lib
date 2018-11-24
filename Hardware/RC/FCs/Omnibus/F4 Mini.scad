@@ -1,20 +1,20 @@
 /******************************************************************************
- * Omnibus F3 Pro flight controller
+ * Omnibus F3 mini flight controller
  */
 
 include <../../../../colours.scad>;
 
-FC_OMNIBUS_F3_PRO_BOARD_DIM = [36, 36, 1.6];
-FC_OMNIBUS_F3_PRO_DIM = [FC_OMNIBUS_F3_PRO_BOARD_DIM[0], FC_OMNIBUS_F3_PRO_BOARD_DIM[1], 7.6];
-FC_OMNIBUS_F3_PRO_HOLE_RAD = 3 / 2; // M3
-FC_OMNIBUS_F3_PRO_HOLE_SPACING = [30.5, 30.5];
+FC_OMNIBUS_F4_MINI_BOARD_DIM = [27.3, 27.3, 1];
+FC_OMNIBUS_F4_MINI_DIM = [FC_OMNIBUS_F4_MINI_BOARD_DIM[0], FC_OMNIBUS_F4_MINI_BOARD_DIM[1], 5.6];
+FC_OMNIBUS_F4_MINI_HOLE_RAD = 2.5 / 2;
+FC_OMNIBUS_F4_MINI_HOLE_SPACING = [20, 20];
 
-module fc_omnibus_f3_pro(
-		board_dim = FC_OMNIBUS_F3_PRO_BOARD_DIM,
+module fc_omnibus_f4_mini(
+		board_dim = FC_OMNIBUS_F4_MINI_BOARD_DIM,
 		colour = COLOUR_GREY_DARK,
-		dim = FC_OMNIBUS_F3_PRO_DIM,
-		hole_rad = FC_OMNIBUS_F3_PRO_HOLE_RAD,
-		hole_spacing = FC_OMNIBUS_F3_PRO_HOLE_SPACING,
+		dim = FC_OMNIBUS_F4_MINI_DIM,
+		hole_rad = FC_OMNIBUS_F4_MINI_HOLE_RAD,
+		hole_spacing = FC_OMNIBUS_F4_MINI_HOLE_SPACING,
 		center = true, // "board" || true || false
 	) {
 
@@ -35,8 +35,8 @@ module fc_omnibus_f3_pro(
 			translate([0, 0, comp_thickness]) {
 
 				// board
-				translate([0, 0, board_dim[2] / 2])
-				cube(board_dim, true);
+				linear_extrude(board_dim[2])
+				rounded_square([board_dim[0], board_dim[1]], 3);
 
 				translate([0, 0, board_dim[2]]) {
 
@@ -53,4 +53,4 @@ module fc_omnibus_f3_pro(
 	}
 }
 
-*fc_omnibus_f3_pro(center = "board");
+*fc_omnibus_f4_mini(center = "board");

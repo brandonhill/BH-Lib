@@ -5,7 +5,7 @@
 include <../../../../colours.scad>;
 include <../../../Electrical/constants.scad>;
 
-RX_FRSKY_XM_BOARD_DIM = [18, 13, 0.85];
+RX_FRSKY_XM_BOARD_DIM = [15.4, 10, 1];
 RX_FRSKY_XM_DIM = [RX_FRSKY_XM_BOARD_DIM[0], RX_FRSKY_XM_BOARD_DIM[1], 3.5];
 
 module rx_frsky_xm(
@@ -15,7 +15,7 @@ module rx_frsky_xm(
 		color_ant = COLOUR_GREY_DARK,
 		color_io = [COLOUR_GREY_DARK, COLOUR_RED, COLOUR_WHITE],
 		color_rx = COLOUR_GREY_DARK,
-		center = true, // "board" || true || false
+		center = "board", // "board" || true || false
 	) {
 
 	comp_thickness = (dim[2] - board_dim[2]) / 2;

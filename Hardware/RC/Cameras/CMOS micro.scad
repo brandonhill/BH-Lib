@@ -5,15 +5,16 @@
 include <../../Electrical/Chip.scad>;
 include <../../Electrical/Wire.scad>;
 
-// this is confusing. TODO: orient vertically
+// this is confusing. TODO: orient vertically?
 CAM_CMOS_MICRO_DIM = [11.5, 12.5, 12.5];
 CAM_CMOS_MICRO_BOARD_DIM = [12.5, 12.5, 1];
 CAM_CMOS_MICRO_HOUSING_DIM = [11.75, 11.75, 3];
-CAM_CMOS_MICRO_HEIGHTS = [2.5, 3, 1.5, 2, 0.5, 2];
+CAM_CMOS_MICRO_HEIGHTS = [2.5, CAM_CMOS_MICRO_HOUSING_DIM[2], 1.75, 1.65, 1, 2.75];
 CAM_CMOS_MICRO_RAD = [4, 3.5, 4, 5];
 
 module cam_cmos_micro() {
 
+	dim = CAM_CMOS_MICRO_DIM;
 	board_dim = CAM_CMOS_MICRO_BOARD_DIM;
 	heights = CAM_CMOS_MICRO_HEIGHTS;
 	rads = CAM_CMOS_MICRO_RAD;
@@ -47,8 +48,10 @@ module cam_cmos_micro() {
 	}
 
 	module housing() {
-		translate([0, 0, heights[1] / 2])
+		*translate([0, 0, heights[1] / 2])
 		cube([CAM_CMOS_MICRO_HOUSING_DIM[0], CAM_CMOS_MICRO_HOUSING_DIM[1], heights[1]], true);
+		translate([0, 0, CAM_CMOS_MICRO_HOUSING_DIM[2] / 2])
+		cube(CAM_CMOS_MICRO_HOUSING_DIM, true);
 	}
 
 	module lens_body() {
@@ -74,7 +77,7 @@ module cam_cmos_micro() {
 	}
 
 	rotate([90, 0, 90])
-	translate([0, 0, -CAM_DIM[2] / 2]) {
+	translate([0, 0, -dim[2] / 2]) {
 
 		board();
 

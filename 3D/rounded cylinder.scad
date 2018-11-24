@@ -8,7 +8,7 @@
 include <../helpers.scad>;
 use <../2D/segment.scad>;
 
-module rounded_cylinder(h, r, f, f1, f2, r1, r2, center = true, $fa = $fa, $fn = $fn, $fs = $fs) {
+module rounded_cylinder(h, r, f, f1, f2, r1, r2, center = true) {
 
 	_r1 = r1 ? r1 : r;
 	_r2 = r2 ? r2 : r;

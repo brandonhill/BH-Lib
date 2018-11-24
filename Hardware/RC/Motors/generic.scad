@@ -170,7 +170,6 @@ module motor_generic(
 		translate([0, 0, height + (mount_height ? mount_height : 0)])
 		cylinder(h = shaft_height, r = shaft_rad);
 	}
-
 }
 
 *

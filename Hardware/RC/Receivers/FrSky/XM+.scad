@@ -5,7 +5,7 @@
 include <../../../../colours.scad>;
 include <../../../Electrical/constants.scad>;
 
-RX_FRSKY_XM_PLUS_BOARD_DIM = [22, 13, 0.85];
+RX_FRSKY_XM_PLUS_BOARD_DIM = [22, 11.75, 0.85];
 RX_FRSKY_XM_PLUS_DIM = [RX_FRSKY_XM_PLUS_BOARD_DIM[0], RX_FRSKY_XM_PLUS_BOARD_DIM[1], 3.5];
 
 module rx_frsky_xm_plus(
@@ -58,5 +58,4 @@ module rx_frsky_xm_plus(
 	}
 }
 
-*
-rx_frsky_xm_plus();
+*rx_frsky_xm_plus();

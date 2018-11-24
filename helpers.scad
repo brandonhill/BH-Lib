@@ -342,6 +342,7 @@ module reflect(x = true, y = true, z = false) {
 
 module show_half(r = [], t = [], d = 1000, 2d = false) {
 	intersection() {
+		if ($children)
 		translate(t)
 		rotate(r)
 		translate([0, d / 2]) {

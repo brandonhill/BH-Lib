@@ -2,6 +2,7 @@
  * Happymodel Teeny 6A 4 in 1 ESC
  */
 
+include <../../../../colours.scad>;
 include <../../../../helpers.scad>;
 
 ESC_TEENY_6A_4IN1_BOARD_DIM = [23.1, 27.6, 1.1];
@@ -17,6 +18,7 @@ module esc_teeny_6a_4in1(
 		hole_rad = ESC_TEENY_6A_4IN1_HOLE_RAD,
 		hole_spacing = ESC_TEENY_6A_4IN1_HOLE_SPACING,
 		tolerance = 0,
+		center = "board", // "board" || true || false
 	) {
 
 	comp_thickness = (dim[2] - board_dim[2]) / 2;
@@ -25,9 +27,10 @@ module esc_teeny_6a_4in1(
 		dim[0] - hole_rad * 4 * 2,
 	];
 
-	translate([0, 0, -board_pos[2] + board_dim[2] / 2]) {
+	color(COLOUR_GREY_DARK)
+	translate([0, 0, center == "board" ? -board_pos[2] + board_dim[2] / 2 : (center ? 0 : dim[2] / 2)]) {
 		difference() {
-			color("dimgray") {
+			union() {
 				translate(board_pos) {
 					cube([board_dim[0], board_dim[0], board_dim[2]], true);
 					cube([hole_spacing[1], board_dim[1], board_dim[2]], true);
@@ -45,5 +48,4 @@ module esc_teeny_6a_4in1(
 	}
 }
 
-*
-esc_teeny_6a_4in1();
+*esc_teeny_6a_4in1();

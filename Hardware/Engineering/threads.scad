@@ -73,7 +73,6 @@ module thread_iso_metric(
 
 /* examples
 
-$fs = 0.5;
 include <constants.scad>;
 
 // M3

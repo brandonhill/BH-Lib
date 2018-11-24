@@ -7,10 +7,10 @@ use <circle true.scad>;
 
 module semicircle(r = 1) {
 	difference() {
-		circle(r);
+		circle_true(r);
 
-		translate([-r, -r * 2, 0])
-		square(r * 2);
+		translate([-r * 2, -r * 4, 0])
+		square(r * 4);
 	}
 }
 
@@ -18,7 +18,7 @@ module semicircle_true(r = 1) {
 	difference() {
 		circle_true(r);
 
-		translate([-r, -r * 2, 0])
-		square(r * 2);
+		translate([-r * 2, -r * 4, 0])
+		square(r * 4);
 	}
 }

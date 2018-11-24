@@ -2,6 +2,7 @@
  * Happymodel Teeny 1S F4 flight controller
  */
 
+include <../../../../colours.scad>;
 include <../../../../helpers.scad>;
 include <../../../Electrical/Jacks/USB.scad>;
 
@@ -23,6 +24,7 @@ module fc_teeny_f4(
 		hole_spacing = FC_TEENY_F4_HOLE_SPACING,
 		tolerance = 0,
 		usb_pos = FC_TEENY_F4_USB_POS,
+		center = "board", // "board" || true || false
 	) {
 
 	comp_thickness = (dim[2] - board_dim[2]) / 2;
@@ -31,7 +33,8 @@ module fc_teeny_f4(
 		dim[1] - hole_rad * 4 * 2,
 	];
 
-	translate([0, 0, -board_pos[2] + board_dim[2] / 2]) {
+	translate([0, 0, center == "board" ? -board_pos[2] + board_dim[2] / 2 : (center ? 0 : dim[2] / 2)]) {
+		color(COLOUR_GREY_DARK)
 		difference() {
 			union() {
 				color("dimgray") {
@@ -46,16 +49,16 @@ module fc_teeny_f4(
 						interior_dim[1],
 						dim[2]], true);
 				}
-
-				translate(usb_pos)
-				rotate([0, 0, 90])
-				jack_usb_micro(tolerance = tolerance)
-				children(); // for plug diff
 			}
 
 			transpose(hole_spacing / 2)
 			cylinder(h = dim[2], r = hole_rad, center = true);
 		}
+
+		translate(usb_pos)
+		rotate([0, 0, 90])
+		jack_usb_micro(tolerance = tolerance)
+		children(); // for plug diff
 
 		// dim check
 		*cube(dim, true);

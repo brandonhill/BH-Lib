@@ -231,11 +231,11 @@ module screw_surround(
 		nut(nut_dim[2], nut_dim[1] / 2);
 
 		if (holes || pitch != undef) {
-			translate([0, 0, cs_style != "none" ? dim[2] : 0])
+			translate([0, 0, (cs_style != "none" ? dim[2] : 0) - 0.1])
 			scale([1, 1, -1])
 			screw_diff(
 				dim,
-				h,
+				h + 0.2,
 				cs_style = cs_style,
 				mock = mock,
 				pitch = pitch,
