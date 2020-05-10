@@ -1,7 +1,6 @@
 
 include <constants.scad>;
 
-use <Chip.scad>;
 include <Buzzers/all.scad>;
 include <Connectors/all.scad>;
 include <Displays/all.scad>;
@@ -11,4 +10,6 @@ include <Pots/all.scad>;
 include <Stepper motors/all.scad>;
 include <Switches/all.scad>;
 include <Voltage regulators/all.scad>;
+use <Chip.scad>;
+use <Component mount.scad>;
 use <Wire.scad>;

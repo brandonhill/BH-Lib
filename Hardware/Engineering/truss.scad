@@ -5,12 +5,25 @@
 // truss section
 module truss_section(
 		i,
-		webLength,
-		walls
+		inside,
+		sections,
+		sectionsY,
+		type,
+		walls,
+		webWidth
 	) {
+
+	// determine angle of web
+	a = atan((inside[1] / sectionsY / (type == "k" ? 2 : 1)) / (inside[0] / sections - (type == "k" || type == "pratt" ? walls : 0)));
 
 	// determine even/odd section - "warren" alternates
 	even = i % 2 == 0;
+
+	// determine length of web
+	webLength = sqrt(
+		pow(inside[0] / sections / 2, 2) +
+		pow(inside[1] / sectionsY / 2, 2)
+	) * 2;
 
 	module web() {
 		l = webLength + walls * 4;
@@ -20,7 +33,7 @@ module truss_section(
 
 	module web_section() {
 		union() {
-			/*
+			//*
 			if (type == "k" || type == "pratt") {
 
 				intersection() {
@@ -41,10 +54,10 @@ module truss_section(
 					}
 
 					// clip angled webbing
-					cube([inside[0] / sections, inside[1] / sectionsY, webDepth]);
+					square([inside[0] / sections, inside[1] / sectionsY]);
 				}
 
-				translate([inside[0] / sections - webThickness / 2, 0, 0])
+				translate([inside[0] / sections - webWidth / 2, 0, 0])
 				rotate([0, 0, 90])
 				web();
 
@@ -68,12 +81,12 @@ module truss_section(
 		}
 	}
 
-	//intersection() {
-		//square([inside[0] / (type == "k" || type == "pratt" ? 1 : sections), inside[1] / sectionsY], true);
+	intersection() {
+		square([inside[0] / (type == "k" || type == "pratt" ? 1 : sections), inside[1] / sectionsY], true);
 
 		translate([-inside[0] / sections / 2, -inside[1] / sectionsY / 2])
 		web_section();
-	//}
+	}
 }
 
 module truss_shape(
@@ -93,24 +106,7 @@ module truss_shape(
 	sections = sections ? sections : round(dim[0] / dim[1]);
 	sectionsY = max(1, (sectionsY ? sectionsY : 1));
 
-	// determine angle of web
-	a = atan((inside[1] / sectionsY / (type == "k" ? 2 : 1)) / (inside[0] / sections - (type == "k" || type == "pratt" ? walls : 0)));
-
-	// determine length of web
-	webLength = sqrt(
-		pow(inside[0] / sections / 2, 2) +
-		pow(inside[1] / sectionsY / 2, 2)
-	) * 2;
-
 	union() {
-
-		// walls
-		if (walls > 0)
-			difference() {
-				square(dim, true);
-				offset(r = -walls)
-				square(dim, true);
-			}
 
 		// sections
 		intersection() {
@@ -123,24 +119,16 @@ module truss_shape(
 					(j + 0.5) * inside[1] / sectionsY,
 					0
 				])
-				truss_section(i + j);
+				truss_section(i + j, inside, sections, sectionsY, type, walls, webWidth);
 			}
 		}
 	}
 }
 
-*truss_shape(
-	dim = [100, 20],
-	sections = 5,
-	sectionsY = 1,
-	webWidth = 1,
-	walls = 1
-);
-
 module truss(
 
 		// flat for printing; Y = height, Z = width
-		dim = [140, 40, 6.35],
+		dim,
 
 		// number of truss sections along X/Y
 		sections,
@@ -148,8 +136,7 @@ module truss(
 
 		// web dims
 		webDepth, // default = width
-		webThickness = 1,
-		webWidth = 5,
+		webWidth, // default = walls
 
 		// chord has L shape? true|false|"x"|"y"
 		chordBrace = true,
@@ -164,27 +151,14 @@ module truss(
 		flat = true,
 	) {
 
-	/*tmp = dim[1];
-	dim = [
-		dim[0],
-		dim[2] > dim[1] ? dim[2] : dim[1],
-		dim[2] > dim[1] ? tmp : dim[2]
-	];
-	//*/
 	webDepth = webDepth ? webDepth : dim[2];
+	webWidth = webWidth ? webWidth : walls;
 	inside = [
 		dim[0] - walls * (type == "k" || type == "pratt" ? 1 : 2),
 		dim[1] - walls * 2,
-		max(dim[2], webDepth)
-	];
-
+		max(dim[2], webDepth) ];
 	sections = sections ? sections : round(dim[0] / dim[1]);
 	sectionsY = max(1, (sectionsY ? sectionsY : 1));
-
-	echo(str("Sections: ", sections, "x", sectionsY));
-	echo(str("Length: ", dim[0], ", Height: ", dim[1], ", Depth: ", dim[2]));
-	echo(str("Webs: depth: ", webDepth, ", width: ", webWidth, ", thickness: ", webThickness));
-	echo(str("Chords: brace: ", (chordBrace ? "Y" : "N"), ", thickness: ", walls));
 
 	// frame
 	module frame() {
@@ -194,15 +168,14 @@ module truss(
 			cube(dim);
 
 			// inside chords
-			translate([walls, walls, webThickness])
+			translate([walls, walls, webWidth])
 			cube([dim[0] - walls * 2, dim[1] - walls * 2, inside[2]]);
 
-
 			// truss opening
-			translate([chordBrace == true || chordBrace == "y" ? webWidth : walls, chordBrace == true || chordBrace == "x" ? webWidth : walls, -1])
+			translate([chordBrace == true || chordBrace == "y" ? dim[2] : walls, chordBrace == true || chordBrace == "x" ? dim[2] : walls, -1])
 			cube([
-				dim[0] - (chordBrace == true || chordBrace == "y" ? webWidth : walls) * 2,
-				dim[1] - (chordBrace == true || chordBrace == "x" ? webWidth : walls) * 2,
+				dim[0] - (chordBrace == true || chordBrace == "y" ? dim[2] : walls) * 2,
+				dim[1] - (chordBrace == true || chordBrace == "x" ? dim[2] : walls) * 2,
 				inside[2] + 2
 			]);
 		}
@@ -214,58 +187,33 @@ module truss(
 
 		frame();
 
-		// truss sections
-		intersection() {
-			translate([walls, walls, 0])
-			for (i = [0 : sections - 1], j = [0 : sectionsY - 1]) {
-			echo("about to call section!");
-				translate([
-					i * inside[0] / sections,
-					j * inside[1] / sectionsY,
-					0
-				])
-				truss_section(i + j);
-			}
-			cube([dim[0], dim[1], max(webDepth, dim[2])]);
-		}
+		translate([dim[0] / 2, dim[1] / 2])
+		linear_extrude(webDepth)
+		truss_shape(dim, sections, sectionsY, webWidth, type, walls);
 	}
 }
-
-truss(
-	dim = [100, 5, 50],
-	type = "x",
-	webDepth = 3,
-	webWidth = 3,
-	walls = 1,
-	webWalls = 1
-);
 
 /* examples
 
 truss(
-	type = "x"
-);
-
-truss(
-	//sections = 4,
-	//sectionsY = 2,
-	dim = [100, 30, 10]
+	dim = [120, 30, 5]
 );
 
 translate([0, 40, 0])
 truss(
+	dim = [120, 30, 5],
 	type = "x"
 );
 
-translate([0, 90, 0])
+translate([0, 80, 0])
 truss(
-	dim = [120, 30, 4],
+	dim = [120, 30, 5],
 	type = "pratt"
 );
 
-translate([0, 130, 0])
+translate([0, 120, 0])
 truss(
-	type = "k",
-	sections = 3
+	dim = [120, 30, 5],
+	type = "k"
 );
 //*/

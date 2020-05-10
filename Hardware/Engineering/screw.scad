@@ -199,10 +199,9 @@ module screw_surround(
 					} else if (cs_style == "bevel") {
 
 						// wall
-//						#
-//						translate([0, 0, dim[2]])
-//						cylinder(dim[0] / 2 + walls, dim[0] / 2 + walls, 0);
-//						#
+						*translate([0, 0, dim[2]])
+						cylinder(dim[0] / 2 + walls, dim[0] / 2 + walls, 0);
+
 						cylinder(
 							h = dim[2] + tolerance,
 							r1 = dim[1] / 2 + tolerance + walls,
@@ -259,34 +258,56 @@ module screw_diff(
 		conical = false, // for printing
 		cs_style = "none",
 		pitch,
+		print_horizontal = false, // makes half a hexagon for printability
 		tolerance = 0,
 		mock = false,
 	) {
 
-	union() {
+
+	module hole($fn_head = $fn, $fn_hole = $fn) {
 
 		// thread hole
-		translate([0, 0, -(h + tolerance)])
+		translate([0, 0, -(h + tolerance - 0.1)])
 		if (pitch != undef)
 			thread_iso_metric(dim[0] + tolerance * 2, h + tolerance, pitch, center = false, internal = true);
 		else
-			cylinder(h = (h + tolerance), r = dim[0] / 2 + tolerance);
+			cylinder_true(h = h + tolerance + 0.1, r = dim[0] / 2 + tolerance, center = false, $fn = $fn_hole);
 
 		// head hole
-//		translate([0, 0, -0.01])
-		cylinder(h = depth + 0.01, r = dim[1] / 2 + tolerance);
+		cylinder_true(h = depth + 0.02, r = dim[1] / 2 + tolerance, center = false, $fn = $fn_head);
 
 		if (conical)
-		scale([1, 1, -1])
-		cylinder(h = (dim[1] - dim[0]) / 2, r1 = dim[1] / 2 + tolerance, r2 = dim[0] / 2 + tolerance);
+		mirror([0, 0, -1])
+		hull() {
+			translate([0, 0, -0.1])
+			cylinder_true(h = 0.1, r = dim[0] / 2 + tolerance, center = false, $fn = $fn_head);
+			cylinder_true(h = (dim[1] - dim[0]) / 2, r1 = dim[1] / 2 + tolerance, r2 = dim[0] / 2 + tolerance, center = false, $fn = $fn_head);
+		}
 
 		// countersink
 		translate([0, 0, -dim[2]])
 		if (cs_style == "recess") {
-			cylinder(h = dim[2], r = dim[1] / 2 + tolerance);
+			cylinder_true(h = dim[2], r = dim[1] / 2 + tolerance, center = false, $fn = $fn_head);
 		} else if (cs_style == "bevel") {
-			cylinder(h = dim[2], r1 = dim[0] / 2 + tolerance, r2 = dim[1] / 2 + tolerance);
+			cylinder_true(h = dim[2], r1 = dim[0] / 2 + tolerance, r2 = dim[1] / 2 + tolerance, center = false, $fn = $fn_head);
 		}
+	}
+
+	if (print_horizontal) {
+		difference() {
+			hole($fn_head = 8, $fn_hole = 6);
+
+			*translate([depth + h + 0.01, 0])
+			cube((depth + h) * 2, true);
+		}
+		*difference() {
+			hole();
+
+			translate([-(depth + h + 0.01), 0])
+			cube((depth + h) * 2, true);
+		}
+	} else {
+		hole();
 	}
 
 	%

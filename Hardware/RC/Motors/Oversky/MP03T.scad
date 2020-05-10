@@ -16,16 +16,18 @@ MOTOR_OVERSKY_MP03T_MOUNT_RAD = 3.25;
 MOTOR_OVERSKY_MP03T_SHAFT_HEIGHT = 4.6;
 MOTOR_OVERSKY_MP03T_SHAFT_RAD = 0.75;
 
-module motor_oversky_mp03t() {
+module motor_oversky_mp03t(
+		detail = "low", // "high", "low"
+	) {
 
 	top_height = MOTOR_OVERSKY_MP03T_HEIGHT - MOTOR_OVERSKY_MP03T_BELL_HEIGHT - MOTOR_OVERSKY_MP03T_MOUNT_HEIGHT;
 
 	color(COLOUR_STEEL)
 	difference() {
 		motor_base(
-			h = (MOTOR_OVERSKY_MP03T_MOUNT_HEIGHT) * 0.95,
+			h = (MOTOR_OVERSKY_MP03T_MOUNT_HEIGHT) * (detail == "high" ? 0.95 : 1),
 			r = MOTOR_OVERSKY_MP03T_RAD,
-			n = 9,
+			n = detail == "high" ? 9 : 0,
 			arm_width = MOTOR_OVERSKY_MP03T_RAD * 0.5,
 			bevel = 0.9,
 			inner_rad = MOTOR_OVERSKY_MP03T_RAD * 0.9
@@ -46,6 +48,7 @@ module motor_oversky_mp03t() {
 			col = COLOUR_STEEL
 		);
 
+		if (detail == "high")
 		motor_stator(
 			MOTOR_OVERSKY_MP03T_BELL_HEIGHT,
 			MOTOR_OVERSKY_MP03T_RAD - 1.6,
@@ -59,7 +62,7 @@ module motor_oversky_mp03t() {
 			motor_base(
 				h = top_height,
 				r = MOTOR_OVERSKY_MP03T_RAD,
-				n = 8,
+				n = detail == "high" ? 8 : 0,
 				bevel = 0.75
 			);
 		}

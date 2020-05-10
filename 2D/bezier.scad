@@ -7,20 +7,20 @@
 // if(degree < 1) throw new Error('degree must be at least 1 (linear)');
 // if(degree > (n-1)) throw new Error('degree must be less than or equal to point count - 1');
 // module b_spline(points, t, degree = 2) {
-// 
+//
 // 	order = degree + 1;
 // 	echo(str("Points = ", points, ", Degree = ", degree, ", Order = ", order));
-// 
-// 
+//
+//
 // 	knots = [ for (i = [0 : len(points) + degree + 1]) i ];
 // 	echo(str("Knots = ", knots));
-// 
+//
 // 	domain = [degree, len(knots) - degree - 1];
 // 	echo(str("Domain = ", domain));
-// 
+//
 // 	t_clamped = t * (domain[1] - domain[0]) + domain[0];
 // 	echo(str("t = ", t, ", clamped = ", t_clamped));
-// 
+//
 // 	for (s = [domain[0] : domain[1] - 1]) {
 // // 		if (knots[s] <= t_clamped && t_clamped <= knots[s + 1])
 // 		if (knots[s] <= t_clamped && t_clamped <= knots[s + 1]) {
@@ -39,8 +39,8 @@
 // 		}
 // 	}
 // }
-// 
-// 
+//
+//
 // function xb_spline(points, t, degree = 2) =
 // 	let (
 // 		knots = [
@@ -64,7 +64,7 @@
 // 					points[i]     *      alpha +
 // 					points[i - 1] * (1 - alpha)
 // 	];
-// 
+//
 // spline = [
 // 	[0, 0],
 // 	[1, 1],
@@ -72,23 +72,23 @@
 // 	[3, -1],
 // 	[4, 0],
 // ] * 2;
-// 
+//
 // color("blue")
 // for (i = [0 : len(spline) - 1])
 // 	translate(spline[i])
 // 	square(0.25);
-// 
+//
 // // bspline = b_spline(spline, 0.5);
 // // echo(str("BSpline", len(bspline), bspline));
-// 
+//
 // b_spline(spline, 0.5);
-// 
+//
 // // $fn = 16;
 // // for (t = [0 : 1 / $fn : 1]) {
 // // 	translate(bspline[i])
 // // 	circle(0.25);
 // // }
-// 
+//
 
 
 
@@ -127,21 +127,21 @@ function bezier3_points(points, steps = $fn) =
 function valuesForIndex(a, i) = [for (j = [0 : len(a) - 1]) a[j][i]];
 
 // expects three (cubic) or four (quadratic) points
-module bezier(points, width = 0.5, connect = true, n = -1) {
-	
+module bezier(points, width = 0.5, connect = true, n = -1, mock = false) {
+
 	order = len(points) - 1;
 	cubic = order == 2;
 	r = width / 2;
 	steps = max(n, order + 2);
 	wx = valuesForIndex(points, 0);
 	wy = valuesForIndex(points, 1);
-	
+
 	module pos(p) {
 		translate(p)
 		children();
 	}
-	
-	module point() {
+
+	module point(r = r) {
 		circle(r);
 	}
 
@@ -169,10 +169,17 @@ module bezier(points, width = 0.5, connect = true, n = -1) {
 			pos(p0)
 			if ($children > 0) children();
 			else point();
-			
+
 			pos(p)
 			if ($children > 0) children();
 			else point();
+		}
+	}
+
+	if (mock) {
+		% for (i = [0 : len(points) - 1]) {
+			translate(points[i])
+			point(i == 0 || i == len(points) - 1 ? r : r * 2);
 		}
 	}
 }

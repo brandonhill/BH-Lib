@@ -14,7 +14,7 @@ module rx_frsky_xm_plus(
 		dim = RX_FRSKY_XM_PLUS_DIM,
 		color_ant = COLOUR_GREY_DARK,
 		color_io = [COLOUR_GREY_DARK, COLOUR_RED, COLOUR_WHITE],
-		center = true, // "board" || true || false
+		center = "board", // "board" || true || false
 	) {
 
 	comp_thickness = (dim[2] - board_dim[2]) / 2;

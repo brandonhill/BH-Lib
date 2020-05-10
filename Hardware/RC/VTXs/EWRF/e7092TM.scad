@@ -1,20 +1,20 @@
 /******************************************************************************
- * Omnibus F3 mini flight controller
+ * EWRF e7092TM smart switchable audio/video transmitter
  */
 
 include <../../../../colours.scad>;
 
-FC_OMNIBUS_F4_MINI_BOARD_DIM = [27.3, 27.3, 1];
-FC_OMNIBUS_F4_MINI_DIM = [FC_OMNIBUS_F4_MINI_BOARD_DIM[0], FC_OMNIBUS_F4_MINI_BOARD_DIM[1], 5.6];
-FC_OMNIBUS_F4_MINI_HOLE_RAD = 2.5 / 2;
-FC_OMNIBUS_F4_MINI_HOLE_SPACING = [20, 20];
+VTX_EWRF_E7092TM_BOARD_DIM = [24, 24, 1];
+VTX_EWRF_E7092TM_DIM = [VTX_EWRF_E7092TM_BOARD_DIM[0], VTX_EWRF_E7092TM_BOARD_DIM[1], 4];
+VTX_EWRF_E7092TM_HOLE_RAD = 1;
+VTX_EWRF_E7092TM_HOLE_SPACING = [20, 20];
 
-module fc_omnibus_f4_mini(
-		board_dim = FC_OMNIBUS_F4_MINI_BOARD_DIM,
+module vtx_ewrf_e7092tm(
+		board_dim = VTX_EWRF_E7092TM_BOARD_DIM,
 		colour = COLOUR_GREY_DARK,
-		dim = FC_OMNIBUS_F4_MINI_DIM,
-		hole_rad = FC_OMNIBUS_F4_MINI_HOLE_RAD,
-		hole_spacing = FC_OMNIBUS_F4_MINI_HOLE_SPACING,
+		dim = VTX_EWRF_E7092TM_DIM,
+		hole_rad = VTX_EWRF_E7092TM_HOLE_RAD,
+		hole_spacing = VTX_EWRF_E7092TM_HOLE_SPACING,
 		center = "board", // "board" || true || false
 	) {
 
@@ -32,17 +32,25 @@ module fc_omnibus_f4_mini(
 			translate([0, 0, comp_thickness / 2])
 			cube([interior_dim[0], interior_dim[1], comp_thickness], true);
 
+			// button
+			translate([board_dim[0] / 5, board_dim[1] / 2 - 1.5, comp_thickness / 2])
+			cube([4.75, 3, comp_thickness], true);
+
 			translate([0, 0, comp_thickness]) {
 
 				// board
 				linear_extrude(board_dim[2])
-				rounded_square([board_dim[0], board_dim[1]], 3);
+				square([board_dim[0], board_dim[1]], true);
 
 				translate([0, 0, board_dim[2]]) {
 
 					// top components
 					translate([0, 0, comp_thickness / 2])
 					cube([interior_dim[0], interior_dim[1], comp_thickness], true);
+
+					// IPEX conn.
+					translate([0, board_dim[1] / 2 - 1.5, comp_thickness / 2])
+					cube([3, 3, comp_thickness], true);
 				}
 			}
 		}
@@ -53,4 +61,4 @@ module fc_omnibus_f4_mini(
 	}
 }
 
-*fc_omnibus_f4_mini(center = "board");
+*vtx_ewrf_e7092tm();

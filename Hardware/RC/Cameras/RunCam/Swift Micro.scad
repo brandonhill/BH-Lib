@@ -23,16 +23,20 @@ CAM_RUNCAM_SWIFT_MICRO_DIM = [
 
 module cam_runcam_swift_micro(
 		board_dim = CAM_RUNCAM_SWIFT_MICRO_BOARD_DIM,
+		col = COLOUR_ORANGE,
 		dim = CAM_RUNCAM_SWIFT_MICRO_DIM,
 		housing_dim = CAM_RUNCAM_SWIFT_MICRO_HOUSING_DIM,
 		lens_heights = CAM_RUNCAM_SWIFT_MICRO_LENS_HEIGHTS,
+		outset = CAM_RUNCAM_SWIFT_MICRO_DIM[2] + CAM_RUNCAM_SWIFT_MICRO_PIVOT_OFFSET,
 		pivot_offset = CAM_RUNCAM_SWIFT_MICRO_PIVOT_OFFSET,
 		rads = CAM_RUNCAM_SWIFT_MICRO_RAD,
 	) {
 
 	pcb_thickness = 1.5;
+	pivot_thickness = 6;
 	plug_dim = [10, 3.2, board_dim[2] - pcb_thickness];
 	plug_pos = [(board_dim[0] - plug_dim[0]) / 2, (board_dim[1] - plug_dim[1]) / 2, plug_dim[2] / 2];
+	r = 3.35 / 2;
 
 	module board() {
 
@@ -62,8 +66,6 @@ module cam_runcam_swift_micro(
 
 	module shape_housing() {
 		inset_factor = 0.7;
-		pivot_thickness = 6;
-		r = 3.35 / 2;
 
 		hull()
 		for (x = [1, -1], y = [1])
@@ -82,17 +84,19 @@ module cam_runcam_swift_micro(
 	}
 
 	module lens_body() {
+		extra = outset - sum(lens_heights) - r;
 		difference() {
 			union() {
-				color(COLOUR_ORANGE)
-				translate([0, 0, 0])
+				// base (part of housing)
+				color(col)
 				cylinder(h = lens_heights[0], r = rads[0]);
 
-				color(COLOUR_GREY_DARK) {
+				color(COLOUR_GREY_DARK)
+				translate([0, 0, 0]) {
 					translate([0, 0, lens_heights[0]])
-					cylinder(h = lens_heights[1], r = rads[1]);
+					cylinder(h = lens_heights[1] + extra, r = rads[1]);
 
-					translate([0, 0, lens_heights[0] + lens_heights[1]])
+					translate([0, 0, extra + lens_heights[0] + lens_heights[1]])
 					cylinder(h = lens_heights[2], r = rads[2]);
 				}
 			}
@@ -109,7 +113,7 @@ module cam_runcam_swift_micro(
 		board();
 		translate([0, 0, board_dim[2]]) {
 
-			color(COLOUR_ORANGE)
+			color(col)
 			difference() {
 				housing();
 
@@ -118,8 +122,12 @@ module cam_runcam_swift_micro(
 				cylinder(h = board_dim[0] + 1, r = 1, center = true);
 			}
 			translate([0, 0, housing_dim[2]]) {
-
 				lens_body();
+
+				// outset dim check
+				*#
+				translate([0, 0, -r])
+				cylinder(h = outset, r = 6);
 			}
 
 			*color(COLOUR_RED_DARK)

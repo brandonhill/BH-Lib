@@ -2,7 +2,7 @@
 
 An OpenSCAD library of useful functions, modules and components.
 
-![OpenSCAD library](https://github.com/brandonhill/BH-Lib/blob/master/sample.png)
+![OpenSCAD library](examples.png)
 
 ### Notes
 

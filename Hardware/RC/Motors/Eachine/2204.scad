@@ -5,23 +5,12 @@
 include <../../../../colours.scad>;
 include <../generic.scad>;
 
-/*
-MOTOR_2204_DIM = [28, [7, 11, 12]];
-MOTOR_2204_HEIGHT = 18;
-MOTOR_2204_RAD = 14;
-MOTOR_2204_SHAFT_RAD = 5 / 2;
-MOTOR_2204_SCREW_SPACING = [16, 19];
-MOTOR_2204_SCREW_DEPTH = 4;
-MOTOR_2204_CLEARANCE_DIM = [8, 2]; // dia, height
-*/
-
-MOTOR_EACHINE_2204_BELL_HEIGHT = 11;
+MOTOR_EACHINE_2204_BELL_HEIGHT = 9;
 MOTOR_EACHINE_2204_HEIGHT = 18;
-//MOTOR_EACHINE_2204_HEIGHT_GROSS = 25.5;
 MOTOR_EACHINE_2204_RAD = 14;
 MOTOR_EACHINE_2204_MOUNT_AXLE_DEPTH = 2;
 MOTOR_EACHINE_2204_MOUNT_AXLE_RAD = 4; // at base, for clearance
-MOTOR_EACHINE_2204_MOUNT_HEIGHT = 3;
+MOTOR_EACHINE_2204_MOUNT_HEIGHT = 6.75;
 MOTOR_EACHINE_2204_MOUNT_HOLE_DEPTH = 4;
 MOTOR_EACHINE_2204_MOUNT_SCREW_DIM = SCREW_M3_SOCKET_DIM;
 MOTOR_EACHINE_2204_MOUNT_HOLES = 4;
@@ -53,11 +42,12 @@ module motor_eachine_2204(
 
 	color(COLOUR_GREY_DARK)
 	difference() {
+		rotate([0, 0, 45])
 		motor_base(
 			h = MOTOR_EACHINE_2204_MOUNT_HEIGHT * (detail == "high" ? 0.95 : 1),
 			r = MOTOR_EACHINE_2204_RAD,
-			n = detail == "high" ? 6 : undef,
-			arm_width = MOTOR_EACHINE_2204_RAD * 0.5,
+			n = detail == "high" ? 4 : undef,
+			arm_width = MOTOR_EACHINE_2204_RAD * 0.8,
 			bevel = 0.9,
 			inner_rad = MOTOR_EACHINE_2204_RAD * 0.9,
 			thickness = 1
@@ -91,9 +81,9 @@ module motor_eachine_2204(
 			motor_base(
 				h = top_height,
 				r = MOTOR_EACHINE_2204_RAD,
-				n = detail == "high" ? 6 : undef,
-				arm_width = MOTOR_EACHINE_2204_RAD * 0.6,
-				bevel = 0.9
+				n = detail == "high" ? 5 : undef,
+				arm_width = MOTOR_EACHINE_2204_RAD * 0.7,
+				bevel = 0.6
 			);
 		}
 	}

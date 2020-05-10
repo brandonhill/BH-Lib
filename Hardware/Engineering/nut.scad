@@ -73,6 +73,7 @@ module nut(
 module nut_diff(
 		dim, // [inner dia., outer dia., height]
 		conical = false, // for printing
+		depth = 0,
 		hole = false,
 		mock = false,
 		tolerance = 0,
@@ -90,6 +91,11 @@ module nut_diff(
 	if (conical)
 	translate([0, 0, dim[2] + tolerance - 0.1])
 	cylinder_true(h = (dim[1] - dim[0]) / 2 + 0.1, r1 = _dim[1] / 2 + tolerance, r2 = _dim[0] / 2 + tolerance, center = false, $fn = sides);
+
+	// depth
+	if (depth > 0)
+	translate([0, 0, dim[2]])
+	cylinder_true(h = depth - dim[2], r = dim[1] / 2 / cos(360 / sides / 2) + tolerance, center = false, $fn = sides);
 
 	if (mock)
 	% nut(dim);

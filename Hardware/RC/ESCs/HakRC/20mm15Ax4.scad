@@ -53,7 +53,7 @@ module esc_hakrc_20_15ax4(
 
 		reflect()
 		translate([hole_spacing[0] / 2, hole_spacing[1] / 2])
-		cylinder(h = dim[2], r = hole_rad, center = true);
+		cylinder(h = dim[2], r = hole_rad, center = center);
 	}
 }
 

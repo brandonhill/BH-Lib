@@ -8,14 +8,14 @@
 use <../helpers.scad>;
 use <../2D/circle true.scad>;
 
-module torus(r1, r2) {
+module torus(r1, r2, fn = $fn) {
 	rotate_extrude()
 	translate([r1, 0])
-	circle(r2);
+	circle(r2, $fn = fn);
 }
 
-module torus_true(r1, r2) {
+module torus_true(r1, r2, fn = $fn) {
 	rotate_extrude()
 	translate([r1, 0])
-	circle_true(r2);
+	circle_true(r2, $fn = fn);
 }

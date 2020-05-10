@@ -8,7 +8,7 @@ use <../../3D/cylinder true.scad>;
 module bearing(
 	dim, // [inner dia., outer dia., height]
 	races,
-	tolerance = 0.15,
+	tolerance = 0,
 	center = true,
 	) {
 
@@ -67,7 +67,7 @@ module bearing(
 	}
 }
 
-module diff_bearing(dim, center = true, hole = false, mock = true, tolerance = 0) {
+module diff_bearing(dim, center = true, hole = true, mock = false, tolerance = 0) {
 
 	module mock_bearing(dim, center = true, hole = true, tolerance = 0) {
 		difference() {

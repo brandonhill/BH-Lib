@@ -102,7 +102,7 @@ function join(values, sep = ", ", _out = "", _i = 0) =
  * Chamfers while extruding a 2D shape
  */
 
-module linear_extrude_chamfer(h, chamfer, round = false, center = true, convexity = 1, $fn = $fn) {
+module linear_extrude_chamfer(h, chamfer, round = false, center = true, convexity = 1) {
 
 	render(convexity = convexity)
 	translate([0, 0, center ? 0 : chamfer])
@@ -115,7 +115,7 @@ module linear_extrude_chamfer(h, chamfer, round = false, center = true, convexit
 
 		// this is the chamfer we're interested in
 		if (round)
-			sphere(chamfer, $fn = $fn);
+			sphere(chamfer);
 		else
 			for (z = [-1, 1])
 				scale([1, 1, z])
@@ -128,7 +128,7 @@ module linear_extrude_chamfer(h, chamfer, round = false, center = true, convexit
  * Note: it's a hack since you can't hull 2D shapes :(
  */
 
-module linear_rotate_extrude(h = 1, a = 360, center = true, convexity = 1, $fn = 0) {
+module linear_rotate_extrude(h = 1, a = 360, center = true, convexity = 1) {
 
 	_steps = round(max(2, $fn != 0 ? $fn : a / 360 * 12));
 
@@ -297,12 +297,11 @@ module warn(msg) {
 }
 
 /***
- * Orient for use in Unity3D
+ * Orient for use in Unity3D (via Blender)
  */
 
 module for_unity3d(scale = 0.001) {
-	rotate([-90, 0, 0])
-	rotate([0, 0, 90])
+	rotate([0, 90, 90])
 	scale(scale)
 	children();
 }

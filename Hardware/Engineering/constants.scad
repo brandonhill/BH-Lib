@@ -4,7 +4,17 @@
 
 include <../../constants.scad>;
 
-// Nuts - [inner dia., outer dia. (to edges), height]
+// BEARINGS
+
+BEARING_688_DIM = [8, 16, 5];
+BEARING_608_DIM = [8, 22, 7];
+
+// BOLTS - [thread dia., head dia., head height]
+
+// 1/4" 20 TPI
+BOLT_I1_4_20_DIM = [1/4 * MMPI, 0.38 * MMPI, 0.25 * MMPI];
+
+// NUTS - [inner dia., outer dia. (to edges), height]
 
 // 5/16"
 NUT_I_5_16_DIM = [5/16 * MMPI, 13, 8];
@@ -24,6 +34,10 @@ SCREW_M3_FLAT_DIM = [3, 6, 1.65, 2.1, 1];
 SCREW_M3_SOCKET_DIM = [3, 5.5, 3, 2.55, 1.3];
 
 SCREW_M4_SOCKET_DIM = [4, 7, 4, 3.05, 2];
+
+SCREW_M6_SOCKET_DIM = [6, 10, 6, 5, 3];
+
+SCREW_M8_SOCKET_DIM = [8, 13, 8, 6, 4];
 
 // THREADS
 

@@ -15,7 +15,7 @@ module fc_omnibus_f3_pro(
 		dim = FC_OMNIBUS_F3_PRO_DIM,
 		hole_rad = FC_OMNIBUS_F3_PRO_HOLE_RAD,
 		hole_spacing = FC_OMNIBUS_F3_PRO_HOLE_SPACING,
-		center = true, // "board" || true || false
+		center = "board", // "board" || true || false
 	) {
 
 	comp_thickness = (dim[2] - board_dim[2]) / 2;
