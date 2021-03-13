@@ -1,8 +1,6 @@
 /******************************************************************************
  * Threads
  *
- * - `internal = true` has artifacts in preview mode but renders fine
- *
  * See: https://en.wikipedia.org/wiki/ISO_metric_screw_thread
  */
 
@@ -66,7 +64,7 @@ module thread_iso_metric(
 				z = [0 : pitch * starts : ceil(h)])
 			translate([0, 0, -(center ? h / 2 : 0) - pitch / 2 * direction + z + dz * step])
 			rotate([0, 0, 360 / starts * start + a * step])
-			polyhedron(points, faces);
+			polyhedron(points, faces, convexity = 2);
 		}
 	}
 }
